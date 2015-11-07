@@ -1,4 +1,4 @@
-Az űrcica féléves órai anyag/pótmérés/önálló mérés kidolgozása a Digitális technika 2 laboratórium harcosainak.
+Féléves órai anyag/pótmérés/önálló mérés kidolgozás a Digitális technika 2 laboratórium harcosainak.
 -Akik valamelyik automatikára mennek tovább, azoknak illene csak ellenőrzésnek használni.
 -A pontosságot nem tudom garantálni. Errlogot szívesen fogadok a mappán belül. 
 Van egy ilyenem: http://cl.ly/0s2p1Y0L2H1Q
@@ -97,6 +97,47 @@ DIV     AB
 33. Elmélet: Melyek a megszakításokhoz kapcsolódó regiszterek és bitek. Mi az EA bit szerepe:
 
 =====ÖNÁLLÓ MÉRÉS=====
+
+1. Alakítsa át az A regiszterben lévő bájtot bináris alakú karaktersorozattá, és tárolja el az IDATA memória 40H címétől kezdődő nyolc szomszédos helyén, és először a legmagasabb helyi érték szerepeljen! Az eredményt írja ki a soros vonalra karakteresen, és a végén küldjön egy- kocsi vissza — soremelést is! (Folyamatábra, kommentezés!) 
+
+
+2. Olvasson be a billentyűzeten megadott nyolc darab 0 és 1-1)61 álló karaktert a soros vonalon, és tárolja az IDATA memória 40H címétől kezdődően! Alakítsa át az IDATA memória 40H címétől kezdődő nyolc szomszédos helyén letárolt 0 és 1 karakterekből álló karaktersorozatot az A regiszterben lévő bináris értékké. Az eredményt írja vissza a képernyőre, decimálisan! Az első helyen a legmagasabb helyi érték szerepel. (Folyamatábra, kommentezés!) 
+
+
+3. Írjon programot, amely az A regiszterben lévő bájtot decimális karakterekké alakítva elhelyezi az IDATA memória három szomszédos helyén! Az eredményt küldje kí a soros vonalon! (bin -decimális - ASC konverzió) (Folyamatábra, kommentezés!) 
+
+
+4. Számolja meg és helyezze el az R3 regiszterbe az A regiszterben lévő 1 értékű bitek számát ASCII karakteres fog mában! Az eredményt küldje ki a soros vonalon! (Folyamatábra, kommentezés!) 
+
+
+5. Az IDATA memória 40H címén kezdődő 3 ASCII karaktert (mindegyike 0,1,...9) alakítsa át bináris értékké! (decimális ASC - bin konverzió) (Folyamatábra, kommentezés!) 
+
+
+6. A billentyűport (COOOH) legkisebb helyi-értékein lévő három nyomógombot A, B, C bemenetként, a LED-port (C001 H} legkisebb helyiértékű kimeneti LED -et (F) tekintve, valósítsa meg a következő logikai függvényt: F=A*B*C (A LED akkor világít, ha mindhárom gombot nyomjuk.) illetve az F=A+B+C. (A LED akkor világít, ha bármelyik gombot nyomjuk). (Folyamatábra, kommentezés!) 
+
+
+7. A billentyűport (0000H) legkisebb helyi-értékein lévő három nyomógombot A, B, C bemenetként, a LED-port (C001H) legkisebb helyi-értékű kimeneti LED -et (F) tekintve, valósítsa meg a kővetkező logikai függvényt: F=(/A*B)+B*C"/A (Folyamatábra, kommentezés!) 
+
+
+8. Írjon programot, amely a gyakorló alsó öt helyiértékű nvomógombját (C000h cím) bináris értékként beolvassa, és egy táblázat segítségével az érték BCD kódját jeleníti meg a LED diódasoron! (pl: gomb=10011 (13H=19D, LED sor: 0001 1001 (19) (Folyamatábra, kommentezés!) 
+
+
+9. Írjon programot, amely egy futófényt állít elő a LED parton (0001H cím)! Késleltető hurok segítségével valósítsa meg a késleltetést. Számítsa ki a késleltetés idejét, és állítson be ne&ved másodperces ciklusidőt! (Folyamatábra, kommentezés!) 
+
+
+10. Készítsen programot, amely a billentyűport (cím: 0000H) legkisebb helyiértékén lévő nyomógomb nyomkodásával felfelé, a következő nyomógomb nyomkodásával lefelé számol! A harmadik nyomógomb megnyomása törli a számlálót! A 8 bites számláló aktuális állapotát a LED soron (C001 H) jelezze ki! (Folyamatábra, kommentezés!) 
+
+
+11. Készítsen programot, amely a billentyűport (cím: COOOH) legkisebb három helyiértékén lévő nyomögomb kombinációnak megfelelő bináris értéket a LED sor (cím: 0001H) megfelelő LED-jének kigyújtásával kijelzi. (3-ból 8-ra dekódoló) (pl. bill.: 101, akkor az 5. led ég.) (Folyamatábra, kommentezés!) 
+
+
+12. Készítsen programot, amely a billentyűport (cím: COOOH) legkisebb helyi-értékén lévő nyomógomb nyomkodásával balra rotálja egy LED fényét a LED soron (0001H), azaz eu világító LED balra lépked. A következő nyomógomb nyomkodásával pedig jobbra rotál! (Folyamatábra, kommentezés!) 
+
+
+13. Írjon programot, amely a soros vonalon beküldött két decimális szám összegét, különbségét, szorzatát és hányadosát kiszámítja, és az eredményt a soros vonalon keresztül a képernyőn megjeleníti! (ADDC, SUBB, MUL, DIV utasítások). (Folyamatábra, kommentezés!) 
+
+
+14. Készítsen elektronikus kódzárat: a billentyűport (cím: COOOH) legkisebb három helyi-értékén lévő nyomógomb (A, B és C gombok) öt, adott sorrendű megnyomása (és elengedése) hatására gyulladjon ki egy LED 5 másodpercig! (Folyamatábra, kommentezés!) 
 
 
 =====ÓRAI ANYAG=====
