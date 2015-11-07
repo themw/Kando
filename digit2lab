@@ -99,16 +99,121 @@ DIV     AB
 
 =====ÓRAI ANYAG=====
 
+PROG	SEGMENT	CODE
+STACK	SEGMENT	IDATA
 
+V1	EQU	R3
+V2	EQU	R4
+
+RSEG	STACK
+DS	16
+RSEG	PROG
+	MOV	SP,#STACK-1
+	
+	MOV	DPTR,#NEV
+	
+; Billentyűzetről kér be két számot.
+; Összeg, Különbség, Szorzat, Hányados, Maradék
+; Képernyőre ÉS Ledsorra is.
+START:
+	MOV	DPTR,#OPER_EGY
+	CALL	S_SOROS_TXT
+	CALL	S_CRLF_KI
+	CALL	S_ECHO
+	MOV	V1,A
+	CALL	S_CRLF_KI
+	CALL	S_CRLF_KI
+	
+	MOV	DPTR,#OPER_KET
+	CALL	S_SOROS_TXT
+	CALL	S_CRLF_KI
+	CALL	S_ECHO
+	CALL	S_CRLF_KI
+	MOV	V2,A
+	CALL	S_CRLF_KI
+	
+	MOV	DPTR,#CIMKE_ADD
+	CALL	S_SOROS_TXT
+	CALL	S_CRLF_KI
+	MOV	A,V1
+	ADD	A,V2
+	CALL	S_DEC_KI
+	CALL	S_CRLF_KI
+	CALL	S_CRLF_KI
+	
+	MOV	DPTR,#CIMKE_SUB
+	CALL	S_SOROS_TXT
+	CALL	S_CRLF_KI
+	MOV	A,V1
+	CLR	C
+	SUBB	A,V2
+	CALL	S_DEC_KI
+	CALL	S_CRLF_KI
+	CALL	S_CRLF_KI
+	
+	MOV	DPTR,#CIMKE_MUL
+	CALL	S_SOROS_TXT
+	CALL	S_CRLF_KI
+	MOV	A,V1
+	MOV	B,V2
+	MUL	AB
+	PUSH	ACC
+	MOV	A,B
+	CALL	S_DEC_KI
+	POP	ACC
+	CALL	S_DEC_KI
+	CALL	S_CRLF_KI
+	CALL	S_CRLF_KI
+	
+	MOV	DPTR,#CIMKE_DIV_1
+	CALL	S_SOROS_TXT
+	CALL	S_CRLF_KI
+	MOV	A,V1
+	MOV	B,V2
+	DIV	AB
+	CALL	S_DEC_KI
+	CALL	S_CRLF_KI
+	MOV	DPTR,#CIMKE_DIV_2
+	CALL	S_SOROS_TXT
+	CALL	S_CRLF_KI
+	MOV	A,B
+	CALL	S_DEC_KI
+	CALL	S_CRLF_KI
+	CALL	S_CRLF_KI
+	CALL	S_CRLF_KI
+	JMP	START
+
+;Kiírja a NEV szöveget.
+START:
+	CALL	S_SOROS_TXT
+	CALL	S_BIL_VAR_ENTER
+	JMP	START
+
+------------------------------------Comma overdose
+
+
+
+------------------------------------And I'm in the zone.
+=====TÁBlÁZAT/SZÖVEG=====
+
+OPER_EGY:	DB	'Kerem az elso operandust',0
+OPER_KET:	DB	'Kerem a masodik operandust',0
+CIMKE_ADD:	DB	'Osszeg:',0
+CIMKE_SUB:	DB	'Kulonbseg:',0
+CIMKE_MUL:	DB	'Szorzat:',0
+CIMKE_DIV_1:	DB	'Hanyados:',0
+CIMKE_DIV_2:	DB	'Maradek:',0
+NEV:		DB	'Mw',0,'Space, Milky Way, Mars',0,'Space kitten',0 ;DPTR erre van állítva.
 
 =====SZUBRUTIN GYŰJTEMÉNY=====
 
-;akármilyen gombnyomásra vár
+;akármilyen gombnyomásra vár, A-ba ír.
 S_BIL_VAR:
         CALL	 S_SOROS_BE
+        JZ  	 S_BIL_VAR
         RET
 	
-;enterre vár
+;enterre vár, A-ba ír.
 S_BIL_VAR_ENTER:
         CALL	S_BIL_VAR
         XRL	A,#0DH
@@ -163,20 +268,20 @@ S_DEC_KI:
 	POP	ACC
 	RET
 
-;visszaír 3 számot
+;erteket olvas soros vonalrol, majd vissza is kuldi. A-ba olvas
 S_ECHO:		
 	CALL	S_DEC_BE
 	CALL	S_DEC_KI
 	RET
 
-;gombokat olvas
+;gombokat olvas. A-ba ir, DPTR valtozik
 S_KLAV:
 	MOV	DPTR,#0C000H
 	MOVX	A,@DPTR
 	CPL	A
 	RET
 
-;gombokat olvas, és vár ha nem nyomtam semmit
+;gombokat olvas, és vár ha nem nyomtam semmit. A-ba ir, DPTR valtozik
 S_KLAW:
 	CALL	S_KLAV
 	CJNE	A,#00H,L_AT1
@@ -184,8 +289,8 @@ S_KLAW:
 L_AT1:	
 	RET
 	
-;gombot olvas, vár amíg nem nyomok semmit, és akkor megy tovább ha elengedem
-	S_KLAWE:
+;gombot olvas, vár amíg nem nyomok semmit, és akkor megy tovább ha elengedem. A-ba ir, DPTR valtozik
+S_KLAWE:
 	CALL	S_KLAW
 	PUSH	ACC
 L_UJ1:
@@ -194,7 +299,7 @@ L_UJ1:
 	POP	ACC
 	RET
 	
-	;ledeket felvillant
+;ledeket felvillant. A-ból ír, DPTR változik.
 S_LED:
 	CPL	A
 	MOV	DPTR,#0C001H
@@ -215,7 +320,7 @@ S_SOROS_KI:
 	MOV	SBUF,A
 	RET
 
-;karakter tömböt küld ki amíg el nem éri a záró nullát
+;stringet kuld ki soros vonalon zarobitig. A-t torli, DPTR-t inicializalni kell a szoveg cimere
 S_SOROS_TXT:
 	CLR	A
 	MOVC	A,@A+DPTR
@@ -225,3 +330,5 @@ S_SOROS_TXT:
 	JMP	S_SOROS_TXT
 ZAROBIT:
 	RET
+
+END
