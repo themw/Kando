@@ -306,7 +306,7 @@ L_AT1:
 	JMP 	L_MAIN
 
 =10=
-;Utolsó Program 2.feladat. Binárisan számol felfelé, gombra megszakad.
+;Utolsó Program 2.feladat. Binárisan számol felfelé, gombra megszakad. S_LED a =11= alján van, utána van L_FOPR
 L_MAIN:
 	LJMP 	L_KEZD
 	DS 	08
@@ -334,7 +334,7 @@ L_INI_TMR0:			;MEGŐRZI A T0-N AZ ELSŐ HÁROM BITET, A NEGYEDIKRE BERAK EGY BIT
 	MOV 	R6, #0 		; SEC SZÁMLÁLÓ
 L_INI_IT:
 	SETB 	ET0
-	SETA 	EA
+	SETA 	EA		;Lehet SETB?
 L_FOPR:				;
 	JMP 	$
 L_FOPR:	 			;MÁSHOGYAN
@@ -427,7 +427,7 @@ L_VAR:
 	CALL	S_DELAY
 	JMP	L_FOPR
 	
-=13=
+
 
 ------------------------------------And I'm in the zone.
 =====TÁBlÁZAT/SZÖVEG=====
