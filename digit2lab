@@ -102,3 +102,126 @@ DIV     AB
 
 
 =====SZUBRUTIN GYŰJTEMÉNY=====
+
+;akármilyen gombnyomásra vár
+S_BIL_VAR:
+        CALL	 S_SOROS_BE
+        RET
+	
+;enterre vár
+S_BIL_VAR_ENTER:
+        CALL	S_BIL_VAR
+        XRL	A,#0DH
+        JNZ	S_BIL_VAR_ENTER
+        CALL	S_CRLF_KI
+        RET
+
+;új sor és soreleje
+S_CRLF_KI:
+	MOV	A,#0DH
+	CALL	S_SOROS_KI
+	MOV	A,#0AH
+	CALL	S_SOROS_KI
+	RET
+
+;erteket olvas soros vonalrol decimalisan 0-255. A-ba olvas, B R2 megmarad, C torlodik
+S_DEC_BE:	
+	CALL	S_SOROS_BE
+	CLR	C
+	SUBB	A,#30H
+	MOV	B,#100
+	MUL	AB
+	MOV	R2,A
+	CALL	S_SOROS_BE
+	CLR	C
+	SUBB	A,#30H
+	MOV	B,#10
+	MUL	AB
+	ADD	A,R2
+	MOV	R2,A
+	CALL	S_SOROS_BE
+	CLR	C
+	SUBB	A,#30H
+	ADD	A,R2
+	RET
+	
+;erteket kuld soros vonalra decimalisan 0-255. A-bol ir, A B megmarad
+S_DEC_KI:	
+	PUSH	ACC
+	MOV	B,#100
+	DIV	AB
+	ADD	A,#30H
+	CALL	S_SOROS_KI
+	MOV	A,B
+	MOV	B,#10
+	DIV	AB
+	ADD	A,#30H
+	CALL	S_SOROS_KI
+	MOV	A,B
+	ADD	A,#30H
+	CALL	S_SOROS_KI
+	POP	ACC
+	RET
+
+;visszaír 3 számot
+S_ECHO:		
+	CALL	S_DEC_BE
+	CALL	S_DEC_KI
+	RET
+
+;gombokat olvas
+S_KLAV:
+	MOV	DPTR,#0C000H
+	MOVX	A,@DPTR
+	CPL	A
+	RET
+
+;gombokat olvas, és vár ha nem nyomtam semmit
+S_KLAW:
+	CALL	S_KLAV
+	CJNE	A,#00H,L_AT1
+	JMP	S_KLAW
+L_AT1:	
+	RET
+	
+;gombot olvas, vár amíg nem nyomok semmit, és akkor megy tovább ha elengedem
+	S_KLAWE:
+	CALL	S_KLAW
+	PUSH	ACC
+L_UJ1:
+	MOVX	A,@DPTR
+	CJNE	A,0FFH,L_UJ1
+	POP	ACC
+	RET
+	
+	;ledeket felvillant
+S_LED:
+	CPL	A
+	MOV	DPTR,#0C001H
+	MOVX	@DPTR,A
+	RET
+
+;Soros vonalból olvas az aksiba
+S_SOROS_BE:
+	JNB	RI,S_SOROS_BE
+	CLR	RI
+	MOV	A,SBUF
+	RET
+
+;Soros vonalra írja ki az aksit
+S_SOROS_KI:
+	JNB	TI,S_SOROS_KI
+	CLR	TI
+	MOV	SBUF,A
+	RET
+
+;karakter tömböt küld ki amíg el nem éri a záró nullát
+S_SOROS_TXT:
+	CLR	A
+	MOVC	A,@A+DPTR
+	INC	DPTR
+	JZ	ZAROBIT
+	CALL	S_SOROS_KI
+	JMP	S_SOROS_TXT
+ZAROBIT:
+	RET
