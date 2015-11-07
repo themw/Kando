@@ -1,6 +1,8 @@
 Az űrcica féléves órai anyag/pótmérés/önálló mérés kidolgozása a Digitális technika 2 laboratórium harcosainak.
 -Akik valamelyik automatikára mennek tovább, azoknak illene csak ellenőrzésnek használni.
 -A pontosságot nem tudom garantálni. Errlogot szívesen fogadok a mappán belül. 
+Van egy ilyenem: http://cl.ly/0s2p1Y0L2H1Q
+Hallgass pimpes zenét: https://youtu.be/o7KhVTXKE1Y
 
 =====MÉRÉSPÓTLÁS=====
 
@@ -261,7 +263,7 @@ UJRA:
 	JMP 	UJRA
 
 =8=
-;Utolsó labor 1. feladata:
+;Utolsó labor 1. feladata. GOMBOK SZÁMOLÁSA LED JELZÉSSEL ÉS SZOFTVERBEN  SZÁMOKKALEGYARÁNT:
 FOPROG:
 	MOV	R2,#0
 	MOV	R3,#8
@@ -304,12 +306,12 @@ L_AT1:
 	JMP 	L_MAIN
 
 =10=
-;MEGSZAKÍTÁSOS PROGRAM
+;Utolsó Program 2.feladat. Binárisan számol felfelé, gombra megszakad.
 L_MAIN:
 	LJMP 	L_KEZD
 	DS 	08
 L_TMR0LT:
-	PUSH 	ACC
+	;PUSH 	ACC
 	MOV 	TH0, #03CH 	;EZT SZÁMOLTUK: 15535=3CAF -> 50 MSEC
 	MOV 	TL0, #0AFH
 	INC 	R5		;MINDEN 50 MSEC-AL MEGNÖVELI AZ ÉRTÉKÉT
@@ -320,7 +322,7 @@ L_TMR0LT:
 	MOV 	A, R6
 	CALL 	S_LED
 L_VEG:	
-	POP 	ACC
+	;POP 	ACC
 	RETI
 	
 L_KEZD: 
@@ -333,7 +335,7 @@ L_INI_TMR0:			;MEGŐRZI A T0-N AZ ELSŐ HÁROM BITET, A NEGYEDIKRE BERAK EGY BIT
 L_INI_IT:
 	SETB 	ET0
 	SETA 	EA
-L_FOPR:
+L_FOPR:				;
 	JMP 	$
 L_FOPR:	 			;MÁSHOGYAN
 	CALL 	S_KLAV
@@ -388,7 +390,8 @@ S_LED:				;Egy kicsit más az eredetihez képest, azért hagytam meg.
 	RET
 	
 =12=
-;Utolsó labor 4. FELADAT. S_LED a =11= szerint megint. ;CSEG AT 4000H
+;Utolsó labor 4. FELADAT. S_LED a =11= szerint megint. ;CSEG AT 4000H. Rutinszerű Delay:
+;A led kivillanása után ha lenyomod a gombot, kiírja mennyi idő telt el a felvillanástól a gomb lenyomásáig.
 L_MAIN:	
 	LJMP	L_KEZD
 	DS	08
@@ -461,7 +464,7 @@ S_BIL_VAR_ENTER:
         CALL	S_BIL_VAR
         XRL	A,#0DH
         JNZ	S_BIL_VAR_ENTER
-        CALL	S_CRLF_KI	;
+        CALL	S_CRLF_KI		;
         RET
 
 ;új sor és soreleje. A megmarad
