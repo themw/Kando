@@ -99,6 +99,8 @@ DIV     AB
 
 =====ÓRAI ANYAG=====
 
+===ELŐLAP===
+
 PROG	SEGMENT	CODE
 STACK	SEGMENT	IDATA
 
@@ -112,6 +114,9 @@ RSEG	PROG
 	
 	MOV	DPTR,#NEV
 	
+===FŐCIKLUSOK===
+
+=1=
 ; Billentyűzetről kér be két számot.
 ; Összeg, Különbség, Szorzat, Hányados, Maradék
 ; Képernyőre ÉS Ledsorra is.
@@ -183,15 +188,243 @@ START:
 	CALL	S_CRLF_KI
 	JMP	START
 
+=2=
 ;Kiírja a NEV szöveget.
 START:
 	CALL	S_SOROS_TXT
 	CALL	S_BIL_VAR_ENTER
 	JMP	START
 
-------------------------------------Comma overdose
+=3=
+;
+UJRA:	
+	RR 	A
+	CALL 	S_LED
+	CALL 	DELAY
+	JMP 	UJRA
 
+=4=
+;F =(A + Bnem) * C + D * Anem
+L_UJRA:	
+	CALL 	S_KLAV
+	MOV 	C, ACC.0
+	ORL 	C,/ACC.1
+	ANL 	C, ACC.2
+	MOV 	F0,C 		;MENTÉS
+	MOV 	C, ACC.3
+	ANL 	C, /ACC.0
+	ORL 	C, F0 		;összeadás
+	JC 	L_FULL
+	CLR 	A
+	JMP 	L_KIJEL
 
+=5=
+;számot olvas be, majd ír ki.
+START:
+	CALL	S_ECHO
+	JMP	START
+
+=6=
+;1-es gomb ad, 2-es töröl, hármas csökkent:
+L_UJRA:	
+	CALL 	S_KLAWE
+	
+	MOV 	R3,A
+	XRL 	A,#1
+	JZ 	L_NOVEL
+	
+	MOV 	A,R3
+	XRL 	A,#2
+	JZ 	L_TOROL
+	
+	MOV 	A,R3
+	XRL 	A,#4
+	JZ 	L_CSOKK
+	
+	JMP 	L_UJRA
+	INC 	R2
+	MOV 	A,R2
+	CALL 	S_LED
+	JMP 	L_UJRA
+
+=7=
+;Kézi léptetés
+UJRA:	
+	CALL 	S_KLAWE
+;ha szeretnéd, hogy csak az első gombra menjen, akkor kell még ez a két sor
+	XRL 	A, #1
+	JNZ 	UJRA
+;ha szeretnéd, hogy a kettes töröljön:
+	INC 	R2
+	MOV 	A,R2
+	CALL 	S_LED
+	JMP 	UJRA
+
+=8=
+;Utolsó labor 1. feladata:
+FOPROG:
+	MOV	R2,#0
+	MOV	R3,#8
+	MOV	DPTR,#0C000H
+	CALL	S_KLAV
+CIKLUS_1:
+	RRC	A
+	JNC	NEMJO
+	INC	R2
+NEMJO:
+	DJNZ	R3,CIKLUS_1
+	MOV	A,R2
+	MOV	DPTR,#0C001H
+	CALL	S_LED
+	ADD	A,#30H
+	CALL	S_SOROS_KI
+	MOV	A,#0DH
+	CALL	S_SOROS_KI
+	JMP	FOPROG
+
+=9=
+;billentyűn gombkombináció. 1 ahol megnyomom, 0 ahol nem; soros vonalon írja ki, hogy hány db gombot nyomtam ki
+L_MAIN:
+	MOV 	R5,#8
+	MOV 	R3,#0
+	CALL 	S_KLAV
+L_CIK:	
+	RLC 	A
+	INC 	L_AT1	;vigyázz, ilyen programnév már van S_KLAWnál. Nevezd át, ha a kettőt használod.
+	INC 	R3
+
+L_AT1:	
+	DJNZ 	R5,L_CIK
+	MOV 	A,R3
+	CALL 	S_LED
+	ADD 	A, #30H
+	CALL 	S_SOROS_KI
+	MOV 	A, #0DH
+	CALL 	S_SOROS_KI
+	JMP 	L_MAIN
+
+=10=
+;MEGSZAKÍTÁSOS PROGRAM
+L_MAIN:
+	LJMP 	L_KEZD
+	DS 	08
+L_TMR0LT:
+	PUSH 	ACC
+	MOV 	TH0, #03CH 	;EZT SZÁMOLTUK: 15535=3CAF -> 50 MSEC
+	MOV 	TL0, #0AFH
+	INC 	R5		;MINDEN 50 MSEC-AL MEGNÖVELI AZ ÉRTÉKÉT
+	MOV 	A, R5
+	CJNE 	A, #20, L_VEG
+	MOV 	R5, #0
+	INC 	R6
+	MOV 	A, R6
+	CALL 	S_LED
+L_VEG:	
+	POP 	ACC
+	RETI
+	
+L_KEZD: 
+L_INI_TMR0:			;MEGŐRZI A T0-N AZ ELSŐ HÁROM BITET, A NEGYEDIKRE BERAK EGY BITET, HOGY MODE1-BEN LEGYEN
+	ANL 	TMOD, #0F0H
+	ORL 	TMOD, #1
+	SETB 	TR0
+	MOV 	R5,#0 		; 50MSEC SZÁMLÁLÓ
+	MOV 	R6, #0 		; SEC SZÁMLÁLÓ
+L_INI_IT:
+	SETB 	ET0
+	SETA 	EA
+L_FOPR:
+	JMP 	$
+L_FOPR:	 			;MÁSHOGYAN
+	CALL 	S_KLAV
+	JZ 	L_FOPR
+	MOV 	R6, #0
+	MOV 	R5, #0
+	JMP 	L_FOPR
+
+=11=
+;Utolsó labor 3. FELADAT: MEGSZAKÍTJA A SZÁMLÁLÓT, ÉS KEZDI ELŐRŐL. EZ MŰKÖDIK ;CSEG AT 4000H
+L_MAIN:	
+	LJMP	L_KEZD
+	DS	08
+L_TMR0IT:
+	PUSH	ACC
+	MOV	TH0,#03CH
+	MOV	TL0,#0AFH
+	INC	R5
+	MOV	A,R5
+	CJNE	A,#20,L_VEG
+	MOV	R5,#0
+	INC	R6
+	MOV	A,R6
+	CALL	S_LED
+L_VEG:	
+	POP 	ACC
+	RETI
+	
+L_KEZD:
+L_INI_TMR0:
+	ANL	TMOD,#0F0H
+	ORL	TMOD,#1
+	SETB	TR0
+	MOV	R5,#0		;50 MS SZAMLALO
+	MOV	R6,#0		;SEC SZAMLALO
+L_INI_IT:
+	SETB	ET0
+	SETB	EA
+	
+L_FOPR:	CALL 	S_KLAV
+	JZ 	L_FOPR
+	MOV 	R6, #0
+	MOV	A,R6
+	CALL	S_LED	
+	MOV 	R5, #0
+	JMP 	L_FOPR
+S_LED:				;Egy kicsit más az eredetihez képest, azért hagytam meg.
+	MOV DPTR,#0C001H
+	CPL A
+	MOVX @DPTR,A
+	CPL A
+	RET
+	
+=12=
+;Utolsó labor 4. FELADAT. S_LED a =11= szerint megint. ;CSEG AT 4000H
+L_MAIN:	
+	LJMP	L_KEZD
+	DS	08
+L_TMR0IT:
+	PUSH	ACC
+	MOV	TH0,#03CH
+	MOV	TL0,#0AFH
+	INC	R5
+L_VEG:	
+	POP 	ACC
+	RETI
+
+L_KEZD:
+L_INI_TMR0:
+	ANL	TMOD,#0F0H
+	ORL	TMOD,#1
+	SETB	TR0
+	MOV	R5,#0		;50 MS SZAMLALO
+	MOV	R6,#0		;SEC SZAMLALO
+L_INI_IT:
+	SETB	ET0
+	SETB	EA
+L_FOPR:	
+	CALL 	S_DELAY
+	MOV 	A, #255
+	CALL	S_LED	
+	MOV 	R5, #0
+L_VAR:	
+	CALL	S_KLAV
+	JZ	L_VAR
+	MOV	A, R5
+	CALL	S_LED
+	CALL	S_DELAY
+	JMP	L_FOPR
+	
+=13=
 
 ------------------------------------And I'm in the zone.
 =====TÁBlÁZAT/SZÖVEG=====
@@ -207,6 +440,16 @@ NEV:		DB	'Mw',0,'Space, Milky Way, Mars',0,'Space kitten',0 ;DPTR erre van áll�
 
 =====SZUBRUTIN GYŰJTEMÉNY=====
 
+;egy példa a delayre. Ez 1 mp.
+S_DELAY:
+	MOV	R2,#244
+	MOV	R3,#1
+	MOV	R4,#8
+	DJNZ	R2,$
+	DJNZ	R3,$-2
+	DJNZ	R4,$-4
+	RET
+
 ;akármilyen gombnyomásra vár, A-ba ír.
 S_BIL_VAR:
         CALL	 S_SOROS_BE
@@ -218,19 +461,24 @@ S_BIL_VAR_ENTER:
         CALL	S_BIL_VAR
         XRL	A,#0DH
         JNZ	S_BIL_VAR_ENTER
-        CALL	S_CRLF_KI
+        CALL	S_CRLF_KI	;
         RET
 
-;új sor és soreleje
+;új sor és soreleje. A megmarad
 S_CRLF_KI:
+	;PUSH	ACC
 	MOV	A,#0DH
 	CALL	S_SOROS_KI
 	MOV	A,#0AH
 	CALL	S_SOROS_KI
+	;POP	ACC
 	RET
 
 ;erteket olvas soros vonalrol decimalisan 0-255. A-ba olvas, B R2 megmarad, C torlodik
-S_DEC_BE:	
+S_DEC_BE:
+	;PUSH	B
+	;MOV	B,R2
+	;PUSH	B
 	CALL	S_SOROS_BE
 	CLR	C
 	SUBB	A,#30H
@@ -248,11 +496,15 @@ S_DEC_BE:
 	CLR	C
 	SUBB	A,#30H
 	ADD	A,R2
+	;POP	B
+	;MOV	R2,B
+	;POP	B
 	RET
 	
 ;erteket kuld soros vonalra decimalisan 0-255. A-bol ir, A B megmarad
 S_DEC_KI:	
 	PUSH	ACC
+	;PUSH	B
 	MOV	B,#100
 	DIV	AB
 	ADD	A,#30H
@@ -265,6 +517,7 @@ S_DEC_KI:
 	MOV	A,B
 	ADD	A,#30H
 	CALL	S_SOROS_KI
+	;POP	B
 	POP	ACC
 	RET
 
@@ -330,5 +583,26 @@ S_SOROS_TXT:
 	JMP	S_SOROS_TXT
 ZAROBIT:
 	RET
+	
+L_NOVEL:
+	INC 	R2
+	JMP 	L_KIJEL
+	
+L_TOROL:
+	MOV 	R2, #0
+	JMP 	L_KIJEL
+	
+L_CSOKK:
+	DEC 	R2
+	JMP 	L_KIJEL
+
+L_FULL: 
+	MOV 	A, #0FFH
+	
+L_KIJEL:
+	CALL 	S_LED
+	JMP 	L_UJRA
+
+
 
 END
