@@ -1,0 +1,76 @@
+Az űrcica féléves órai anyag/pótmérés/önálló mérés kidolgozása a Digitális technika 2 laboratórium harcosainak.
+-Akik valamelyik automatikára mennek tovább, azoknak illene csak ellenőrzésnek használni.
+-A pontosságot nem tudom garantálni. Errlogot szívesen fogadok a mappán belül. 
+
+=====MÉRÉSPÓTLÁS=====
+
+1. Számolás:
+223H= ???B
+
+2. Számolás:
+a, 43H XOR 52H= ???H
+
+b, 67H AND 32H= ???H
+
+c, 67H OR 32H= ???H
+
+3. 13H * 45H= ???H
+
+4. Számolás:
+a, 1041D= ???H
+
+b, 3A1H= ???D
+
+5. Program: Töltse fel az akkumulátort 182 D értékkel, majd az akku tartalmát DIREKT vigye az 55H című adatregiszterbe, illetve az 56H-ba INDIREKT.
+
+6. Program: 0FFH értékkel egy ciklus felhasználásával 20H címtől kezdődően feltöltünk 60 darab regisztert.
+
+7. Program: Másoljuk át 4000H-tól 5 bájtot a 60H-tól kezdődő címekre.
+
+8. Program: A kódmemória első 5 bájtját az adatmemória 70H-tól kezdődő címekre másoljuk át.
+
+9. Elmélet: Az MCS51-es mikrokontroller belső adatmemóriájának részei.
+
+10. Elmélet: PSEN, RD, WR vezérlőjelek.
+
+11. Elmélet: Mik az SFR regiszterek. Hol helyezkednek el, sorolj fel néhányat.
+
+12. Elmélet: Mit csinál a következő utasítás: MOVC A, @A+DPTR
+
+13. Elmélet: Mutasd be a bitkezelő utasításokat.
+
+14. Elmélet: Hol helyezkedik el, és milyen 2 fő részből áll a bit-címezhető memória. Melyik memóriaterületen vannak a bitenként címezhető regiszterek.
+
+15. Elmélet: Miért és mikor kell a számok előtt # jelet használni. Mi a különbség " MOV A,3 " és " MOV A,#3 " között.
+
+16. Elmélet: ACC=14H és B=23H. Mi lesz a tartalma H formában MUL AB után.
+
+17. Elmélet: Mit tartalmaz a .HEX file, mire kell.
+
+18. Elmélet: Mit tartalmaz és milyen formában egy program lista és egy hex formátumú fájlja?
+
+19. Program: Ciklussal töltse fel 20H címtől 60 bájtot 0FFH értékkel.
+
+20. Panel: Az alsó 3 nyomógombok legyenek bináris helyiértékek. Amelyik le van nyomva, annak a ledje világítson.
+
+21. Elmélet: A 8051-es adatmemóriájának részletes felosztását rajzold le.
+
+22. Program: Mi lesz A, B tartalma H alakban az alábbi program után:
+MOV A, #12H
+MOV B, #34H
+RL A
+SWAP A
+SETB ACC.52
+RR A
+MUL AB
+ 
+ 23. Program: A és B regiszterek tartalma H alakban az alábbi program után:
+MOV A, #141
+MOV B, #13H
+INC A
+RL A
+
+=====ÖNÁLLÓ MÉRÉS=====
+
+
+=====ÓRAI ANYAG=====
