@@ -56,21 +56,49 @@ b, 3A1H= ???D
 21. Elmélet: A 8051-es adatmemóriájának részletes felosztását rajzold le.
 
 22. Program: Mi lesz A, B tartalma H alakban az alábbi program után:
-MOV A, #12H
-MOV B, #34H
-RL A
-SWAP A
-SETB ACC.52
-RR A
-MUL AB
+MOV     A, #12H
+MOV     B, #34H
+RL      A
+SWAP    A
+SETB    ACC.52
+RR      A
+MUL     AB
  
- 23. Program: A és B regiszterek tartalma H alakban az alábbi program után:
-MOV A, #141
-MOV B, #13H
-INC A
-RL A
+23. Program: A és B regiszterek tartalma H alakban az alábbi program után:
+MOV     A, #141
+MOV     B, #13H
+INC     A
+RL      A
+SWAP    A
+INC     A
+RR      A
+DIV     AB
+
+24. Program: Külső adatmemória 100-as címétől 15 bájt feltöltése 0A5H értékellel, majd ezt másolni a belső adatmemória 50H címétől.
+
+25. Program: F = A * (B + /C) + A*B*C
+
+26. Elmélet: Mit jelent, ha egy szegmens relokálható:
+
+27. Elmélet: Bitcímeket alkalmazva, mi a 22H című regiszter 7. bitjének a bitcíme:
+
+28. Elmélet: Milyen ugró utasítások használhatók bit operandussal:
+
+29. Elmélet: Hogyan lehet szöveget kiíratni a képernyőre soros vonal közvetlen programozásával:
+
+30. Elmélet: Counter/timer modul felépítése és üzemmódjai:
+
+31. Elmélet: Melyek a soros perifériákhoz kapcsolódó regiszerek és bitek:
+
+32. Elmélet: Melyek az időzítő modulokhoz kapcsolódó regiszerek és bitek. Mi a TF0 és a TR0 szerepe: 
+
+33. Elmélet: Melyek a megszakításokhoz kapcsolódó regiszterek és bitek. Mi az EA bit szerepe:
 
 =====ÖNÁLLÓ MÉRÉS=====
 
 
 =====ÓRAI ANYAG=====
+
+
+
+=====SZUBRUTIN GYŰJTEMÉNY=====
