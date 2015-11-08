@@ -133,16 +133,38 @@ M:	CLR 	C		;(CY)<=0	(megj: az utasításkészletben van az egész)
 				;BITEKNÉL XOR KAPCSOLAT NINCSEN
 
 14. Elmélet: Hol helyezkedik el, és milyen 2 fő részből áll a bit-címezhető memória. Melyik memóriaterületen vannak a bitenként címezhető regiszterek.
-M:	
-15. Elmélet: Miért és mikor kell a számok előtt # jelet használni. Mi a különbség " MOV A,3 " és " MOV A,#3 " között.
+M:	A belső adatmemóriában helyezkedik el , direkt és indirekt címzéssel érhető el. 20H-tól 2FH-ig (16byte) a bitcímezhető memória. 
+4 darab bitcímezhető regiszter van : BANK 0 címe: 00, BANK1 címe 01, BANK2címe 10,BANK3 címe 11     
+a bítcímezhető regiszterek 00H-tól 1FH-ig helyezkednek el.
 
-16. Elmélet: ACC=14H és B=23H. Mi lesz a tartalma H formában MUL AB után.
+15. Elmélet: Miért és mikor kell a számok előtt # jelet használni. Mi a különbség " MOV A,3 " és " MOV A,#3 " között.
+M:	Akkor kell használni a # jelet , ha Immediate Constant címzést alkalmazuk , azért  hogy az adott <cél> állományba , az adott konstans értéket másoljuk bele.
+	MOV	A,#3 		;(A)<=3  KONSTANS 3 ÉRTÉKET MOZGAT A BA( KONSANTS CÍMZÉS)
+	MOV 	A,3 		; (A)<=(3)	DIREKT BÁJTOT  MOZGAT A BA (DIREKT CÍMZÉS)
+
+
+16. Elmélet: ACC=14H és B=23H. Mi lesz A és B tartalma H formában MUL AB után.
+M:	A kettő szorzata 2BCH lesz, ez miatt B=02H és A=BCH
 
 17. Elmélet: Mit tartalmaz a .HEX file, mire kell.
+M:	A gépi kódot tartlalmazza hexadecimális formában. A ROM/EPROM ilyen formában tárolja az információt.
 
 18. Elmélet: Mit tartalmaz és milyen formában egy program lista és egy hex formátumú fájlja?
+M:	:10246200464C5549442050524F46494C4500464C33 		;Íme egy sor példának. Minden sora a hexnek kb. ilyen hányadék.
+	|||||||||||                              CC->Checksum	;33 Ellenőrzőösszeg. A sort ellenőrzi, hogy volt-e hiba.
+	|||||||||DD->Data					;464C-től 464C-ig maga az adat van.
+	|||||||TT->Record Type					;00 típus. 00 az adatrekord.
+	|||AAAA->Address					;2462 cím, ahol az adat lesz.
+	|LL->Record Length					;10 adattípusok száma a felvételen belül
+	:->Colon						;Minden rekord ezzel kezdődik.
 
 19. Program: Ciklussal töltse fel 20H címtől 60 bájtot 0FFH értékkel.
+M:	MOV	R6,#60		;R6 <-60D érték
+	MOV	R1,#20H		;R1 <-20H érték
+LOOP4:	
+	MOV	@R1,#0FFH	;Indirekt címzés, R1 értékre mutatott címre rakja a #0FFH-t
+	INC	R1		;Növeli R1-et
+	DJNZ	R6,LOOP4	;Csökkenti R6-ot és ugrik a ciklus elejére, amíg R6 nem 0.
 
 20. Panel: Az alsó 3 nyomógombok legyenek bináris helyiértékek. Amelyik le van nyomva, annak a ledje világítson.
 
