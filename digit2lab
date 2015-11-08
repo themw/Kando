@@ -686,13 +686,13 @@ S_DELAY:
 	DJNZ	R2,$		;
 	DJNZ	R3,$-2		;
 	DJNZ	R4,$-4		;
-	RET			;
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;akármilyen gombnyomásra vár, A-ba ír.
 S_BIL_VAR:
         CALL	 S_SOROS_BE	;
         JZ  	 S_BIL_VAR	;
-        RET			;
+        RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;enterre vár, A-ba ír.
 S_BIL_VAR_ENTER:
@@ -700,7 +700,7 @@ S_BIL_VAR_ENTER:
         XRL	A,#0DH		;
         JNZ	S_BIL_VAR_ENTER	;
         CALL	S_CRLF_KI	;
-        RET
+        RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;új sor és soreleje. A megmarad
 S_CRLF_KI:
@@ -710,7 +710,7 @@ S_CRLF_KI:
 	MOV	A,#0AH		;
 	CALL	S_SOROS_KI	;
 	;POP	ACC		;
-	RET			;
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;erteket olvas soros vonalrol decimalisan 0-255. A-ba olvas, B R2 megmarad, C torlodik
 S_DEC_BE:
@@ -737,7 +737,7 @@ S_DEC_BE:
 	;POP	B		;
 	;MOV	R2,B		;
 	;POP	B		;
-	RET			;
+	RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;erteket kuld soros vonalra decimalisan 0-255. A-bol ir, A B megmarad
 S_DEC_KI:	
@@ -757,20 +757,20 @@ S_DEC_KI:
 	CALL	S_SOROS_KI	;
 	;POP	B		;
 	POP	ACC		;
-	RET			,
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;erteket olvas soros vonalrol, majd vissza is kuldi. A-ba olvas
 S_ECHO:		
 	CALL	S_DEC_BE	;
 	CALL	S_DEC_KI	;
-	RET			;
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;gombokat olvas. A-ba ir, DPTR valtozik
 S_KLAV:
 	MOV	DPTR,#0C000H	;
 	MOVX	A,@DPTR		;
 	CPL	A		;
-	RET			;
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;gombokat olvas, és vár ha nem nyomtam semmit. A-ba ir, DPTR valtozik
 S_KLAW:
@@ -778,7 +778,7 @@ S_KLAW:
 	CJNE	A,#00H,L_AT1	;
 	JMP	S_KLAW		;
 L_AT1:	
-	RET			;
+	RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;gombot olvas, vár amíg nem nyomok semmit, és akkor megy tovább ha elengedem. A-ba ir, DPTR valtozik
 S_KLAWE:
@@ -788,28 +788,28 @@ L_UJ1:
 	MOVX	A,@DPTR		;
 	CJNE	A,0FFH,L_UJ1	;
 	POP	ACC		;
-	RET			;
+	RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;ledeket felvillant. A-ból ír, DPTR változik.
 S_LED:
-	CPL	A		;
-	MOV	DPTR,#0C001H	;
-	MOVX	@DPTR,A		;
-	RET			;
+	CPL	A		;Invertálja a biteket A-ban.
+	MOV	DPTR,#0C001H	;DPTR-be másolja a címet. 0C001H-tól kezdődnek a ledek.
+	MOVX	@DPTR,A		;A-t a külső RAMba másolja
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;Soros vonalból olvas az aksiba
 S_SOROS_BE:
-	JNB	RI,S_SOROS_BE	;
-	CLR	RI		;
-	MOV	A,SBUF		;
-	RET			;
+	JNB	RI,S_SOROS_BE	;Ha RI=0, akkor ugrik önmagára vissza.
+	CLR	RI		;Törli RI-t
+	MOV	A,SBUF		;SBUF tartalmát A-ba írja.
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;Soros vonalra írja ki az aksit
 S_SOROS_KI:
-	JNB	TI,S_SOROS_KI	;
-	CLR	TI		;
-	MOV	SBUF,A		;
-	RET			;
+	JNB	TI,S_SOROS_KI	;Ha TI=0, akkor ugrik önmagára vissza.
+	CLR	TI		;Törli TI-t
+	MOV	SBUF,A		;Acc tartalmát feladja soros postán =3
+	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;stringet kuld ki soros vonalon zarobitig. A-t torli, DPTR-t inicializalni kell a szoveg cimere
 S_SOROS_TXT:
