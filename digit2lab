@@ -87,7 +87,7 @@ LOOP2:
 	INC	R1		;R1 értékének növelése
 	DJNZ	R6, LOOP2	;Csökkenti R6 értékét amíg R6<>0 ÉS ugrik vissza a LOOP2-re.
 
-!8. Program: A kódmemória első 5 bájtját az adatmemória 70H-tól kezdődő címekre másoljuk át.
+8. Program: A kódmemória első 5 bájtját az adatmemória 70H-tól kezdődő címekre másoljuk át.
 M:	MOV	R6, #5		;5D érték R6-ba
 	MOV	R1, #70H	;70H megy R1-be
 	MOV	DPTR, #2000H	;A kódmemória első bájtja 2000H-n van, akkor az lesz a datapointer értéke.
@@ -176,23 +176,23 @@ LOOP4:
 
 
 22. Program: Mi lesz A, B tartalma H alakban az alábbi program után:
-M:	MOV     A, #12H		;A-ba teszi a 12H-t: 00010010
-	MOV     B, #34H		;B-be teszi a 34H-t: 00110100
-	RL      A		;Rotálja A-t balra, lesz. 00010010 -> 00100100
-	SWAP    A		;Felforgatja A-t: 00100100 -> 11011011
-	SETB    ACC.5		;A-nak a 6. számjegyét 1-re állítja. 11011011 -> 11011111
-	RR      A		;Jobbra rotálja A-t: 11011111 -> 11101111
-	MUL     AB		;=308CH Így B=30H és A=8CH
+M:	MOV     A, #12H		;A-ba teszi a 12H-t: 00010010B
+	MOV     B, #34		;B-be teszi a 34D-t: 00100010B
+	RL      A		;Rotálja A-t balra, lesz. 00010010B -> 00100100B
+	SWAP    A		;Felcseréli a két hexa számot A-ban: 00100100B -> 01000010B
+	SETB    ACC.5		;A-nak a 6. számjegyét 1-re állítja balróll. 01000010B -> 01100010B
+	RR      A		;Jobbra rotálja A-t: 01100010B -> 00110001B
+	MUL     AB		;=682H Így B=06H és A=82H
 
 23. Program: A és B regiszterek tartalma H alakban az alábbi program után:
 M:	MOV     A, #141		;A=141D
 	MOV     B, #13H		;B=13H
-	INC     A		;141+1=142 : 10001110
+	INC     A		;10001101 -> 10001110
 	RL      A		;10001110 -> 00011101
-	SWAP    A		;00011101 -> 11100010
-	INC     A		;11100010 -> 11100011
-	RR      A		;11100011 -> 11110001
-	DIV     AB		;=12H Így B=0H és A=12H
+	SWAP    A		;00011101 -> 11010001
+	INC     A		;11010001 -> 11010010
+	RR      A		;11010010 -> 01101001
+	DIV     AB		;=A05H Így B=0AH és A=05H
 
 24. Program: Külső adatmemória 100-as címétől 15 bájt feltöltése 0A5H értékellel, majd ezt másolni a belső adatmemória 50H címétől.
 M:	MOV	R6,#15		;
