@@ -1,29 +1,44 @@
-Féléves órai anyag/pótmérés/önálló mérés kidolgozás a Digitális technika 2 laboratórium harcosainak.
--Akik valamelyik automatikára mennek tovább, azoknak illene csak ellenőrzésnek használni.
+"Féléves órai anyag/pótmérés/önálló mérés kidolgozás a Digitális technika 2 laboratórium harcosainak.
+-Akik valamelyik bizonyos automatikára menn(én)ek tovább, azoknak illene csak ellenőrzésnek használni.
 -A pontosságot nem tudom garantálni. Errlogot szívesen fogadok a mappán belül. 
-Van egy ilyenem: http://cl.ly/0s2p1Y0L2H1Q
-Hallgass pimpes zenét: https://youtu.be/o7KhVTXKE1Y
+Adtak egy ilyet: http://cl.ly/0s2p1Y0L2H1Q
+Hallgass pimpes zenét: https://youtu.be/2RFz44C5P4w
+Megjegyzés tökfejeknek: H: hexadecimális. D: decimális (nem kell kiírni, mert mindig ez az alapeset). B: bináris.
+Licensz: Beerware"
+.űrcica
 
 =====MÉRÉSPÓTLÁS=====
+; Dr Kónya László opensource feladatkiírása. Feltétel az önálló labor elkezdéséhez. 
 
 1. Számolás:
 223H= ???B
+M: 1000100011B
 
 2. Számolás:
 a, 43H XOR 52H= ???H
+M: 11H
 
 b, 67H AND 32H= ???H
+M: 22H
 
 c, 67H OR 32H= ???H
+M: 77H
 
 3. 13H * 45H= ???H
+M: 51FH
 
 4. Számolás:
 a, 1041D= ???H
+M: 411H
 
 b, 3A1H= ???D
+M: 3A1H
 
-5. Program: Töltse fel az akkumulátort 182 D értékkel, majd az akku tartalmát DIREKT vigye az 55H című adatregiszterbe, illetve az 56H-ba INDIREKT.
+5. Program: Töltse fel az akkumulátort 182 (D) értékkel, majd az akku tartalmát DIREKT vigye az 55H című adatregiszterbe, illetve az 56H-ba INDIREKT.
+MOV	A, #182		;Aksi feltöltése magával az értékkel
+MOV	55H, A		;Így néz ki a direkt címzés 55H-ba.
+MOV	R0, #56H	;Indirekt címzés lehetséges R0-val vagy R1-el.
+MOV	@R0, A		;Így néz ki az indirekt címzés 56H-ba.
 
 6. Program: 0FFH értékkel egy ciklus felhasználásával 20H címtől kezdődően feltöltünk 60 darab regisztert.
 
