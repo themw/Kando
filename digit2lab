@@ -303,7 +303,18 @@ M:      A mikrokontroller család megszakításai fix címűek.
 
 
 7. A billentyűport (0000H) legkisebb helyi-értékein lévő három nyomógombot A, B, C bemenetként, a LED-port (C001H) legkisebb helyi-értékű kimeneti LED -et (F) tekintve, valósítsa meg a kővetkező logikai függvényt: F=(/A*B)+B*C"/A (Folyamatábra, kommentezés!) 
-
+MAIN MOV C,ACC.1 B-->C
+ORL C,/ACC2   B+/C
+ANL C,ACC.0   (B+/C)*A
+MOV F0,C      (B+/C)*A --->>F0
+MOV C,ACC.0    A--->C
+ANL C,ACC.1    A*B
+ANL C,ACC.2    A*B*C
+ORL C,F0    A*B*C+A*(B+/C)
+CLR A   
+RLC A
+CALL S_LED
+JMP MAIN
 
 8. Írjon programot, amely a gyakorló alsó öt helyiértékű nvomógombját (C000h cím) bináris értékként beolvassa, és egy táblázat segítségével az érték BCD kódját jeleníti meg a LED diódasoron! (pl: gomb=10011 (13H=19D, LED sor: 0001 1001 (19) (Folyamatábra, kommentezés!) 
 
@@ -339,7 +350,7 @@ V2	EQU	R4		; -//-
 RSEG	STACK			;Kiválasztja a STACK szegmenst.
 DS	16			;Ennyi bájtot foglal le a memóriaterületből.
 RSEG	PROG			;Kiválasztja a PROG szegmenst.
-	MOV	SP,#STACK-1	;
+	MOV	SP,#STACK-1	;Stack pointer beállítás
 	MOV	DPTR,#NEV	;A pointerbe beállítja a NEV táblázat értékét.
 	
 ===FŐCIKLUSOK===
@@ -349,71 +360,71 @@ RSEG	PROG			;Kiválasztja a PROG szegmenst.
 ; Összeg, Különbség, Szorzat, Hányados, Maradék
 ; Képernyőre ÉS Ledsorra is.
 START:
-	MOV	DPTR,#OPER_EGY
-	CALL	S_SOROS_TXT
-	CALL	S_CRLF_KI
-	CALL	S_ECHO
-	MOV	V1,A
-	CALL	S_CRLF_KI
-	CALL	S_CRLF_KI
+	MOV	DPTR,#OPER_EGY	;Kiíratja az OPER_EGY sor tartalmát
+	CALL	S_SOROS_TXT	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	CALL	S_ECHO		;Ugrik erre a szubrutinra.
+	MOV	V1,A		
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	
 	MOV	DPTR,#OPER_KET
-	CALL	S_SOROS_TXT
-	CALL	S_CRLF_KI
-	CALL	S_ECHO
-	CALL	S_CRLF_KI
+	CALL	S_SOROS_TXT	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	CALL	S_ECHO		;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	MOV	V2,A
-	CALL	S_CRLF_KI
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	
 	MOV	DPTR,#CIMKE_ADD
-	CALL	S_SOROS_TXT
-	CALL	S_CRLF_KI
+	CALL	S_SOROS_TXT	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	MOV	A,V1
 	ADD	A,V2
-	CALL	S_DEC_KI
-	CALL	S_CRLF_KI
-	CALL	S_CRLF_KI
+	CALL	S_DEC_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	
 	MOV	DPTR,#CIMKE_SUB
-	CALL	S_SOROS_TXT
-	CALL	S_CRLF_KI
-	MOV	A,V1
-	CLR	C
-	SUBB	A,V2
-	CALL	S_DEC_KI
-	CALL	S_CRLF_KI
-	CALL	S_CRLF_KI
+	CALL	S_SOROS_TXT	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	MOV	A,V1		
+	CLR	C		
+	SUBB	A,V2		
+	CALL	S_DEC_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	
 	MOV	DPTR,#CIMKE_MUL
-	CALL	S_SOROS_TXT
-	CALL	S_CRLF_KI
-	MOV	A,V1
-	MOV	B,V2
-	MUL	AB
-	PUSH	ACC
-	MOV	A,B
-	CALL	S_DEC_KI
-	POP	ACC
-	CALL	S_DEC_KI
-	CALL	S_CRLF_KI
-	CALL	S_CRLF_KI
+	CALL	S_SOROS_TXT	
+	CALL	S_CRLF_KI	
+	MOV	A,V1		
+	MOV	B,V2		
+	MUL	AB		
+	PUSH	ACC		
+	MOV	A,B		
+	CALL	S_DEC_KI	
+	POP	ACC		
+	CALL	S_DEC_KI	
+	CALL	S_CRLF_KI	
+	CALL	S_CRLF_KI	
 	
-	MOV	DPTR,#CIMKE_DIV_1
-	CALL	S_SOROS_TXT
-	CALL	S_CRLF_KI
+	MOV	DPTR,#CIMKE_DIV_1	
+	CALL	S_SOROS_TXT	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	MOV	A,V1
 	MOV	B,V2
 	DIV	AB
-	CALL	S_DEC_KI
-	CALL	S_CRLF_KI
+	CALL	S_DEC_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	MOV	DPTR,#CIMKE_DIV_2
-	CALL	S_SOROS_TXT
-	CALL	S_CRLF_KI
+	CALL	S_SOROS_TXT	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	MOV	A,B
-	CALL	S_DEC_KI
-	CALL	S_CRLF_KI
-	CALL	S_CRLF_KI
-	CALL	S_CRLF_KI
+	CALL	S_DEC_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
+	CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
 	JMP	START
 
 =2=
@@ -669,166 +680,166 @@ NEV:		DB	'Mw',0,'Space, Milky Way, Mars',0,'Space kitten',0 ;DPTR erre van áll�
 
 ;egy példa a delayre. Ez 1 mp.
 S_DELAY:
-	MOV	R2,#244
-	MOV	R3,#1
-	MOV	R4,#8
-	DJNZ	R2,$
-	DJNZ	R3,$-2
-	DJNZ	R4,$-4
-	RET
+	MOV	R2,#244		;
+	MOV	R3,#1		;
+	MOV	R4,#8		;
+	DJNZ	R2,$		;
+	DJNZ	R3,$-2		;
+	DJNZ	R4,$-4		;
+	RET			;
 
 ;akármilyen gombnyomásra vár, A-ba ír.
 S_BIL_VAR:
-        CALL	 S_SOROS_BE
-        JZ  	 S_BIL_VAR
-        RET
+        CALL	 S_SOROS_BE	;
+        JZ  	 S_BIL_VAR	;
+        RET			;
 	
 ;enterre vár, A-ba ír.
 S_BIL_VAR_ENTER:
-        CALL	S_BIL_VAR
-        XRL	A,#0DH
-        JNZ	S_BIL_VAR_ENTER
-        CALL	S_CRLF_KI		;
+        CALL	S_BIL_VAR	;
+        XRL	A,#0DH		;
+        JNZ	S_BIL_VAR_ENTER	;
+        CALL	S_CRLF_KI	;
         RET
 
 ;új sor és soreleje. A megmarad
 S_CRLF_KI:
-	;PUSH	ACC
-	MOV	A,#0DH
-	CALL	S_SOROS_KI
-	MOV	A,#0AH
-	CALL	S_SOROS_KI
-	;POP	ACC
-	RET
+	;PUSH	ACC		;
+	MOV	A,#0DH		;
+	CALL	S_SOROS_KI	;
+	MOV	A,#0AH		;
+	CALL	S_SOROS_KI	;
+	;POP	ACC		;
+	RET			;
 
 ;erteket olvas soros vonalrol decimalisan 0-255. A-ba olvas, B R2 megmarad, C torlodik
 S_DEC_BE:
-	;PUSH	B
-	;MOV	B,R2
-	;PUSH	B
-	CALL	S_SOROS_BE
-	CLR	C
-	SUBB	A,#30H
-	MOV	B,#100
-	MUL	AB
-	MOV	R2,A
-	CALL	S_SOROS_BE
-	CLR	C
-	SUBB	A,#30H
-	MOV	B,#10
-	MUL	AB
-	ADD	A,R2
-	MOV	R2,A
-	CALL	S_SOROS_BE
-	CLR	C
-	SUBB	A,#30H
-	ADD	A,R2
-	;POP	B
-	;MOV	R2,B
-	;POP	B
-	RET
+	;PUSH	B		;
+	;MOV	B,R2		;
+	;PUSH	B		;
+	CALL	S_SOROS_BE	;
+	CLR	C		;
+	SUBB	A,#30H		;
+	MOV	B,#100		;
+	MUL	AB		;
+	MOV	R2,A		;
+	CALL	S_SOROS_BE	;
+	CLR	C		;
+	SUBB	A,#30H		;
+	MOV	B,#10		;
+	MUL	AB		;
+	ADD	A,R2		;
+	MOV	R2,A		;
+	CALL	S_SOROS_BE	;
+	CLR	C		;
+	SUBB	A,#30H		;
+	ADD	A,R2		;
+	;POP	B		;
+	;MOV	R2,B		;
+	;POP	B		;
+	RET			;
 	
 ;erteket kuld soros vonalra decimalisan 0-255. A-bol ir, A B megmarad
 S_DEC_KI:	
-	PUSH	ACC
-	;PUSH	B
-	MOV	B,#100
-	DIV	AB
-	ADD	A,#30H
-	CALL	S_SOROS_KI
-	MOV	A,B
-	MOV	B,#10
-	DIV	AB
-	ADD	A,#30H
-	CALL	S_SOROS_KI
-	MOV	A,B
-	ADD	A,#30H
-	CALL	S_SOROS_KI
-	;POP	B
-	POP	ACC
-	RET
+	PUSH	ACC		;
+	;PUSH	B		;
+	MOV	B,#100		;
+	DIV	AB		;
+	ADD	A,#30H		;
+	CALL	S_SOROS_KI	;
+	MOV	A,B		;
+	MOV	B,#10		;
+	DIV	AB		;
+	ADD	A,#30H		;
+	CALL	S_SOROS_KI	;
+	MOV	A,B		;
+	ADD	A,#30H		;
+	CALL	S_SOROS_KI	;
+	;POP	B		;
+	POP	ACC		;
+	RET			,
 
 ;erteket olvas soros vonalrol, majd vissza is kuldi. A-ba olvas
 S_ECHO:		
-	CALL	S_DEC_BE
-	CALL	S_DEC_KI
-	RET
+	CALL	S_DEC_BE	;
+	CALL	S_DEC_KI	;
+	RET			;
 
 ;gombokat olvas. A-ba ir, DPTR valtozik
 S_KLAV:
-	MOV	DPTR,#0C000H
-	MOVX	A,@DPTR
-	CPL	A
-	RET
+	MOV	DPTR,#0C000H	;
+	MOVX	A,@DPTR		;
+	CPL	A		;
+	RET			;
 
 ;gombokat olvas, és vár ha nem nyomtam semmit. A-ba ir, DPTR valtozik
 S_KLAW:
-	CALL	S_KLAV
-	CJNE	A,#00H,L_AT1
-	JMP	S_KLAW
+	CALL	S_KLAV		;
+	CJNE	A,#00H,L_AT1	;
+	JMP	S_KLAW		;
 L_AT1:	
-	RET
+	RET			;
 	
 ;gombot olvas, vár amíg nem nyomok semmit, és akkor megy tovább ha elengedem. A-ba ir, DPTR valtozik
 S_KLAWE:
-	CALL	S_KLAW
-	PUSH	ACC
+	CALL	S_KLAW		;
+	PUSH	ACC		;
 L_UJ1:
-	MOVX	A,@DPTR
-	CJNE	A,0FFH,L_UJ1
-	POP	ACC
-	RET
+	MOVX	A,@DPTR		;
+	CJNE	A,0FFH,L_UJ1	;
+	POP	ACC		;
+	RET			;
 	
 ;ledeket felvillant. A-ból ír, DPTR változik.
 S_LED:
-	CPL	A
-	MOV	DPTR,#0C001H
-	MOVX	@DPTR,A
-	RET
+	CPL	A		;
+	MOV	DPTR,#0C001H	;
+	MOVX	@DPTR,A		;
+	RET			;
 
 ;Soros vonalból olvas az aksiba
 S_SOROS_BE:
-	JNB	RI,S_SOROS_BE
-	CLR	RI
-	MOV	A,SBUF
-	RET
+	JNB	RI,S_SOROS_BE	;
+	CLR	RI		;
+	MOV	A,SBUF		;
+	RET			;
 
 ;Soros vonalra írja ki az aksit
 S_SOROS_KI:
-	JNB	TI,S_SOROS_KI
-	CLR	TI
-	MOV	SBUF,A
-	RET
+	JNB	TI,S_SOROS_KI	;
+	CLR	TI		;
+	MOV	SBUF,A		;
+	RET			;
 
 ;stringet kuld ki soros vonalon zarobitig. A-t torli, DPTR-t inicializalni kell a szoveg cimere
 S_SOROS_TXT:
-	CLR	A
-	MOVC	A,@A+DPTR
-	INC	DPTR
-	JZ	ZAROBIT
-	CALL	S_SOROS_KI
-	JMP	S_SOROS_TXT
+	CLR	A		;Törli A-t
+	MOVC	A,@A+DPTR	;A progmemóriából másol A-ba
+	INC	DPTR		;Növeli a datapointer értékét 1-el
+	JZ	ZAROBIT		;Ha az aksi értéke 0, akkor ugrik erre a szubrutinra.
+	CALL	S_SOROS_KI	;Ugrik erre a szubrutinra.
+	JMP	S_SOROS_TXT	;Visszaugrik erre a szubrutinra.
 ZAROBIT:
-	RET
+	RET			;Visszaugrik oda, ahonnét meghívták.
 	
 L_NOVEL:
-	INC 	R2
-	JMP 	L_KIJEL
+	INC 	R2		;Növeli R2 értékét 1-el.
+	JMP 	L_KIJEL		;Ugrik erre a szubrutinra.
 	
 L_TOROL:
-	MOV 	R2, #0
-	JMP 	L_KIJEL
+	MOV 	R2, #0		;Nullázza R2 értékét.
+	JMP 	L_KIJEL		;Ugrik erre a szubrutinra.
 	
 L_CSOKK:
-	DEC 	R2
-	JMP 	L_KIJEL
+	DEC 	R2		;Csökkenti R2 értékét 1-el.
+	JMP 	L_KIJEL		;Ugrik erre a szubrutinra.
 
 L_FULL: 
-	MOV 	A, #0FFH
+	MOV 	A, #0FFH	;Feltölti A,t adott értékkel.
 	
 L_KIJEL:
-	CALL 	S_LED
-	JMP 	L_UJRA
+	CALL 	S_LED		;Ugrik erre a szubrutinra.
+	JMP 	L_UJRA		;Visszaugrik a főprogramra.
 
 
 
