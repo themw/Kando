@@ -166,48 +166,118 @@ LOOP4:
 	INC	R1		;Növeli R1-et
 	DJNZ	R6,LOOP4	;Csökkenti R6-ot és ugrik a ciklus elejére, amíg R6 nem 0.
 
-20. Panel: Az alsó 3 nyomógombok legyenek bináris helyiértékek. Amelyik le van nyomva, annak a ledje világítson.
+!20. Panel: Az alsó 3 nyomógombok legyenek bináris helyiértékek. Amelyik le van nyomva, annak a ledje világítson.
 
-21. Elmélet: A 8051-es adatmemóriájának részletes felosztását rajzold le.
+
+!21. Elmélet: A 8051-es adatmemóriájának részletes felosztását rajzold le.
+
 
 22. Program: Mi lesz A, B tartalma H alakban az alábbi program után:
-MOV     A, #12H
-MOV     B, #34H
-RL      A
-SWAP    A
-SETB    ACC.52
-RR      A
-MUL     AB
- 
+M:	MOV     A, #12H		;A-ba teszi a 12H-t: 00010010
+	MOV     B, #34H		;B-be teszi a 34H-t: 00110100
+	RL      A		;Rotálja A-t balra, lesz. 00010010 -> 00100100
+	SWAP    A		;Felforgatja A-t: 00100100 -> 11011011
+	SETB    ACC.5		;A-nak a 6. számjegyét 1-re állítja. 11011011 -> 11011111
+	RR      A		;Jobbra rotálja A-t: 11011111 -> 11101111
+	MUL     AB		;=308CH Így B=30H és A=8CH
+
 23. Program: A és B regiszterek tartalma H alakban az alábbi program után:
-MOV     A, #141
-MOV     B, #13H
-INC     A
-RL      A
-SWAP    A
-INC     A
-RR      A
-DIV     AB
+M:	MOV     A, #141		;A=141D
+	MOV     B, #13H		;B=13H
+	INC     A		;141+1=142 : 10001110
+	RL      A		;10001110 -> 00011101
+	SWAP    A		;00011101 -> 11100010
+	INC     A		;11100010 -> 11100011
+	RR      A		;11100011 -> 11110001
+	DIV     AB		;=12H Így B=0H és A=12H
 
 24. Program: Külső adatmemória 100-as címétől 15 bájt feltöltése 0A5H értékellel, majd ezt másolni a belső adatmemória 50H címétől.
+M:	MOV	R6,#15		;
+	MOV	DPTR,#100	;
+	MOV 	A,#0A5H		;
+LOOP5:	
+	MOVX	@DPTR,A		;
+	INC	DPTR		;
+	DJNZ	R6,LOOP5	;
+	MOV	R3,#15		;
+	MOV	R4,#50H		;
+LOOP6:	
+	CLR	A		;
+	MOVX	A,@DPTR		;
+	MOV	@R4,A		;
+	INC	R4		;
+	DEC	DPTR		;
+	DJNZ	R3,LOOP6	;
 
 25. Program: F = A * (B + /C) + A*B*C
+M:	MOV 	F0, ACC.0	;Menti A-t.
+	MOV 	C, ACC.1	;Beteszi C-be a B-t.
+	ORL 	C, /ACC.2	;B + /C
+	ANL	C, F0		;A * zárójel
+	MOV 	F0,C 		;MENTÉS
+	MOV 	C, ACC.0	;Beteszi A-t a C-be	
+	ANL 	C, ACC.1	;A*B
+	ANL 	C, ACC.2	;A*B*C
+	ORL 	C, F0 		;összeadja a két tagot, eredmény a C-ben.
 
 26. Elmélet: Mit jelent, ha egy szegmens relokálható:
+M:	RSEG: Azt jelenti, hogy előre volt definiálva egy terület, amit betöltéskor újra meg lehet találni.
 
 27. Elmélet: Bitcímeket alkalmazva, mi a 22H című regiszter 7. bitjének a bitcíme:
+M:	22H.7
 
 28. Elmélet: Milyen ugró utasítások használhatók bit operandussal:
+M:	JB 	<bit>,<c.rel>;jump if bit , tetszőleges bitet vizsgálhatunk vele ha 1 értékű
+	JNB	<bit>,<c.rel>;jump if not bit , akkor ugrik ha a bit 0
+	JBC	<bit>,<c.rel>;jump bit and clear, akkor ugrik ha a bit 1 erteku es torli is a bitet
 
-29. Elmélet: Hogyan lehet szöveget kiíratni a képernyőre soros vonal közvetlen programozásával:
 
-30. Elmélet: Counter/timer modul felépítése és üzemmódjai:
+29. Program: Hogyan lehet szöveget kiíratni a képernyőre soros vonal közvetlen programozásával:
+M:	SZOVEG: 	DB	'Ezt ird ki',0
+;byteonkent olvassa be a forditoprogram  a karakterek  ascii  kodjat es elhelyezi  a memoriaba, majd onnan írja ki a soros vonalra , ha eljut a lezáró 0 karakterig , akkor befejezi a ciklust.
+	MOV	R7,#0		;
+	MOV	DPTR,#SZOVEG1	;
+UJRA:
+	MOV	A,R7		;
+	MOVC	A,@A+DPTR	;
+	JZ	VEG		;
+ISM:
+	JNB	TI,ISM		;
+	CLR 	TI		;
+	MOV	SBUF,A		;
+	INC	R7		;
+	JMP	UJRA		;
+VEG:	..........	
 
+
+30. Elmélet: Counter/timer modul (TCM) felépítése és üzemmódjai:
+M:	Felépítés:
+		Timer1	       |             Timer0		
+|  Gate  |  C/T  |  M1  |  M0  |  Gate  |  C/T  |  M1  |  M0  |
+	Üzemmódok:
+| M1 | M0 |
+  0    0        13 bites Timer
+  0    1        16 bites Timer/Counter
+  1    0        8 bites Auto-újratöltő Timer/Counter
+  1    1        Split Timer Mode. Ezt nem használjuk, mert igényel egy soros portot.
+  
 31. Elmélet: Melyek a soros perifériákhoz kapcsolódó regiszerek és bitek:
+M:      Státusz bitek - RI,TI
+        Az RS-232, full duplex szabvány értelmében a vételnél és az adásnál is az SBUF (azonos cím , de fizikailag két különböző SFR az adó és a vevő)bufferbe kerül az adat. T1es időzítő a soros átvitel Baud-Rate generátora
 
 32. Elmélet: Melyek az időzítő modulokhoz kapcsolódó regiszerek és bitek. Mi a TF0 és a TR0 szerepe: 
+M:      T1 es időzítő  a soros átvitel Baud-Rate generátora, csak a T0 időzítőt alkalmaztuk a mérési feladatokban. Az ütemmód beállítás a TMOD SFR- ben történik, csak bájtosan írható , olvasható , ezért figyelnünk , kell , hogy a felső 4 bitet ne változtassuk meg. Az üzemmód beállítását maszkolással tudjuk elvégezni. TCON regiszterben vannak a T0,T1 vezérlő és státusz bitjei ezek a bitek a "SETB bit" , "CLEAR bit" utasításokkal egyenként törölhetőek vagy beírhatóak. A TF0 bit egy megszakítást kérő bit: T0 számláló túlcsordulásba 1-be írja a TF0 bitet. TR0 bit  a Timer\Counter0 futását vezérlő bit. Ha értéke 1 indítja ,ha 0 leállítja a Timer\Counter0.
 
 33. Elmélet: Melyek a megszakításokhoz kapcsolódó regiszterek és bitek. Mi az EA bit szerepe:
+M:      A mikrokontroller család megszakításai fix címűek.
+        Egy megszakítás elfogadása utána a CPU a rutint az adott megszakításhoz tartozó címen hívja
+        A TF0 bit egy megszakítást kérő bit: T0 számláló túlcsordulásba 1-be írja a TF0 bitet.
+        A megszakítás feltétele , hogy a megfelelő engedélyező maszk bit értéke 1 legyen.
+        A megszakítást engedélyező bitek az IEN0- interrupt enable SFR ben vannak : EA általános engedélyező bit a többi az egyes megszakításokhoz tartozó maszk bitek pl. T0-hoz ET0.
+        Megszakítás akkor jön létre , ha a forrás megszakítást kér és EA , illetve a megfelelő maszk bit is 1 értékű.
+	Megszakítás kérés esetén a magasabb priorítású megszakítás kérést szolgálja ki a kontroller.
+	A sorrend az IP0 priorítás vezérlő regiszerben módosítható.
+
 
 =====ÖNÁLLÓ MÉRÉS=====
 
@@ -257,18 +327,17 @@ DIV     AB
 
 ===ELŐLAP===
 
-PROG	SEGMENT	CODE
-STACK	SEGMENT	IDATA
+PROG	SEGMENT	CODE		;Deklarálja a szegmenst PROG néven.
+STACK	SEGMENT	IDATA		; -//- STACK néven.
 
-V1	EQU	R3
-V2	EQU	R4
+V1	EQU	R3		;Definiálja az R3-at V1-nek.
+V2	EQU	R4		; -//-
 
-RSEG	STACK
-DS	16
-RSEG	PROG
-	MOV	SP,#STACK-1
-	
-	MOV	DPTR,#NEV
+RSEG	STACK			;Kiválasztja a STACK szegmenst.
+DS	16			;Ennyi bájtot foglal le a memóriaterületből.
+RSEG	PROG			;Kiválasztja a PROG szegmenst.
+	MOV	SP,#STACK-1	;
+	MOV	DPTR,#NEV	;A pointerbe beállítja a NEV táblázat értékét.
 	
 ===FŐCIKLUSOK===
 
@@ -582,8 +651,6 @@ L_VAR:
 	JMP	L_FOPR
 	
 
-
-------------------------------------And I'm in the zone.
 =====TÁBlÁZAT/SZÖVEG=====
 
 OPER_EGY:	DB	'Kerem az elso operandust',0
