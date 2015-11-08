@@ -1,3 +1,32 @@
+                   ;,_            ,
+                  _uP~"b          d"u,
+                 dP'   "b       ,d"  "o
+                d"    , `b     d"'    "b
+               l] [    " `l,  d"       lb
+               Ol ?     "  "b`"=uoqo,_  "l
+             ,dBb "b        "b,    `"~~TObup,_
+           ,d" (db.`"         ""     "tbc,_ `~"Yuu,_
+         .d" l`T'  '=                      ~     `""Yu,
+       ,dO` gP,                           `u,   b,_  "b7
+      d?' ,d" l,                           `"b,_ `~b  "1
+    ,8i' dl   `l                 ,ggQOV",dbgq,._"  `l  lb
+   .df' (O,    "             ,ggQY"~  , @@@@@d"bd~  `b "1
+  .df'   `"           -=@QgpOY""     (b  @@@@P db    `Lp"b,
+ .d(                  _               "ko "=d_,Q`  ,_  "  "b,
+ Ql         .         `"qo,._          "tQo,_`""bo ;tb,    `"b,
+(qQ         |L           ~"QQQgggc,_.,dObc,opooO  `"~~";.   __,7,
+`qp         t\io,_           `~"TOOggQV""""        _,dg,_ =PIQHib.
+ `qp        `Q["tQQQo,_                          ,pl{QOP"'   7AFR`
+   `         `tb  '""tQQQg,_             p" "b   `       .;-.`Vl'
+              "Yb      `"tQOOo,__    _,edb    ` .__   /`/'|  |b;=;.__
+                            `"tQQQOOOOP""        `"\QV;qQObob"`-._`\_~~-._
+                                 """"    ._        /   | |oP"\_   ~\ ~\_  ~\
+                                         `~"\ic,qggddOOP"|  |  ~\   `\  ~-._
+                                           ,qP`"""|"   | `\ `;   `\   `\
+                                _        _,p"     |    |   `\`;    |    |
+                                 "boo,._dP"       `\_  `\    `\|   `\   ;
+                                  `"7tY~'            `\  `\    `|_   |
+                                                           `~\  |
 "Féléves órai anyag/pótmérés/önálló mérés kidolgozás a Digitális technika 2 laboratórium harcosainak.
 -Akik valamelyik bizonyos automatikára menn(én)ek tovább, azoknak illene csak ellenőrzésnek használni.
 -A pontosságot nem tudom garantálni. Errlogot szívesen fogadok a mappán belül. 
@@ -12,52 +41,99 @@ Licensz: Beerware"
 
 1. Számolás:
 223H= ???B
-M: 1000100011B
+M: 	1000100011B
 
 2. Számolás:
 a, 43H XOR 52H= ???H
-M: 11H
+M: 	11H
 
 b, 67H AND 32H= ???H
-M: 22H
+M: 	22H
 
 c, 67H OR 32H= ???H
-M: 77H
+M: 	77H
 
 3. 13H * 45H= ???H
-M: 51FH
+M: 	51FH
 
 4. Számolás:
 a, 1041D= ???H
-M: 411H
+M: 	411H
 
 b, 3A1H= ???D
-M: 3A1H
+M: 	3A1H
 
 5. Program: Töltse fel az akkumulátort 182 (D) értékkel, majd az akku tartalmát DIREKT vigye az 55H című adatregiszterbe, illetve az 56H-ba INDIREKT.
-MOV	A, #182		;Aksi feltöltése magával az értékkel
-MOV	55H, A		;Így néz ki a direkt címzés 55H-ba.
-MOV	R0, #56H	;Indirekt címzés lehetséges R0-val vagy R1-el.
-MOV	@R0, A		;Így néz ki az indirekt címzés 56H-ba.
+M:	MOV	A, #182		;Aksi feltöltése magával az értékkel
+	MOV	55H, A		;Így néz ki a direkt címzés 55H-ba.
+	MOV	R0, #56H	;Indirekt címzés lehetséges R0-val vagy R1-el.
+	MOV	@R0, A		;Így néz ki az indirekt címzés 56H-ba.
 
 6. Program: 0FFH értékkel egy ciklus felhasználásával 20H címtől kezdődően feltöltünk 60 darab regisztert.
+M:	MOV	R6, #60		;60-as számot R6-ba másoljuk.
+	MOV	R0, #20H	;20H számot az R0-ba.
+LOOP1:
+	MOV	@R0, #0FFH	;Indirekt címzéssel eljuttatjuk a H számot az R0-ban levő hely értékére.
+	INC	R0		;Növeljök R0-t, ezáltal mindig a következő címet kapjuk minden új ciklusban.
+	DJNZ	R1, LOOP1	;Csökkenti R1 tartalmát, és visszaugrik a LOOP1 sorba. Amíg R1 nem 0.
 
-7. Program: Másoljuk át 4000H-tól 5 bájtot a 60H-tól kezdődő címekre.
+7. Program: Másoljuk át 4000H-tól 5 bájtot a 60H-tól kezdődő belső adatmemória címekre.
+M:	MOV	R6, #5		;R6-ba az ötös értéket.
+	MOV	R1, #60H	;R1-be 60H értéket.
+	MOV	DPTR, #400H	;Datapointerbe 400H érték.
+LOOP2:
+	MOVX	A,@DPTR		;DPTR-ben levő cím tartalmát az aksiba pakoljuk	külső RAM-ra mutató címből.	
+	INC	DPTR		;a datapointer értékének növelése.
+	INC	R1		;R1 értékének növelése
+	DJNZ	R6, LOOP2	;Csökkenti R6 értékét amíg R6<>0 ÉS ugrik vissza a LOOP2-re.
 
-8. Program: A kódmemória első 5 bájtját az adatmemória 70H-tól kezdődő címekre másoljuk át.
+!8. Program: A kódmemória első 5 bájtját az adatmemória 70H-tól kezdődő címekre másoljuk át.
+M:	MOV	R6, #5		;5D érték R6-ba
+	MOV	R1, #70H	;70H megy R1-be
+	MOV	DPTR, #2000H	;A kódmemória első bájtja 2000H-n van, akkor az lesz a datapointer értéke.
+LOOP3:	
+	MOV	A, #0		;A-t is beállítjuk 0-nak.
+	MOVC	A, @A+DPTR	;Progmemből bemásoluk A és dptr értékeinek összegére mutató cím értékét.
+	MOV	R1, A		;Elmentük R1 által mutatott helyre az értéket.
+	INC	DPTR		;Növeljük a DPTR-t
+	INC	R1		;R1-et is növeljük, mert nem akarjuk hogy állandóan felülírjon a ciklus egy cím értékét.
+	DJNZ	R6, LOOP3	;Vált LOOP3 sorába, és csökkenti R6-ot, amíg nem 0.
 
 9. Elmélet: Az MCS51-es mikrokontroller belső adatmemóriájának részei.
+M: Belső adatmemória, direkt és indirekt címzés, indirekt címzés, mögötte direkt címzés, bitcímezhető bank,
 
 10. Elmélet: PSEN, RD, WR vezérlőjelek.
+M:	PSEN:	Külső programmemória olvasását engedélyező jel
+	RD:	Külső adatmemóriaolvasó jel.
+	WR:	Külső adatmemóriaíró jel.
 
 11. Elmélet: Mik az SFR regiszterek. Hol helyezkednek el, sorolj fel néhányat.
+M:	Az SFR-ek speciális funkciójú regiszterek, a belső adatmermória 80H -tól FFH-ig tartó területén érhetőek el direkt címzéssel. Két fő típusa: 
+A. perifériák által használt regiszterek
+B. CPU által használt "Core" regiszterek pl. STATUS vagy megszakításkezelő regiszterek
+Pl:	A  vagy ACC - AKKUMLÁTOR, 	B,	DPTR- DATAPOINTER 16 BITES
+
 
 12. Elmélet: Mit csinál a következő utasítás: MOVC A, @A+DPTR
+M: 	Bemásolja az A-ba a kódmemória azon  rekeszét, amelynek címe az A előző értéke és a DPTR összege.
 
 13. Elmélet: Mutasd be a bitkezelő utasításokat.
+M:	CLR 	C		;(CY)<=0	(megj: az utasításkészletben van az egész)
+	SETB	C		;(CY)<=1
+	CPL	C		;(CY)<=(CY)NEGALVA
+	CLR 	<BIT>		;
+	SETB	<BIT>		;
+	CPL	<BIT>		;
+	MOV	C,<BIT>		;bemásolja carrybe a bit tartalmát
+	MOV	<BIT>,C		;
+	ANL	C,<BIT>  	;ÉS kapcsolatba hozza a bitet a carryvel és az eredmény a carrybe kepződik
+	ANL	C,/C<BIT> 	;ÉS kapcsolatba hozza  a bites valtozo tagadottjat es az eredmény a carrybe kepződik
+	ORL	C,<BIT> 	;VAGY
+	ORL	C,/<BIT>	;
+				;BITEKNÉL XOR KAPCSOLAT NINCSEN
 
 14. Elmélet: Hol helyezkedik el, és milyen 2 fő részből áll a bit-címezhető memória. Melyik memóriaterületen vannak a bitenként címezhető regiszterek.
-
+M:	
 15. Elmélet: Miért és mikor kell a számok előtt # jelet használni. Mi a különbség " MOV A,3 " és " MOV A,#3 " között.
 
 16. Elmélet: ACC=14H és B=23H. Mi lesz a tartalma H formában MUL AB után.
