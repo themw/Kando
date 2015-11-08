@@ -100,7 +100,10 @@ LOOP3:
 	DJNZ	R6, LOOP3	;Vált LOOP3 sorába, és csökkenti R6-ot, amíg nem 0.
 
 9. Elmélet: Az MCS51-es mikrokontroller belső adatmemóriájának részei.
-M: Belső adatmemória, direkt és indirekt címzés, indirekt címzés, mögötte direkt címzés, bitcímezhető bank,
+M: 	1. DATA:4 regiszterbank 00H-1FH, bitcímezhető memória terület 20H-2FH, bájtosan címezhető terület 30H-7FH. 
+	2.1 IDATA: nincsenek kitüntetett részei, az egész bájtosan címezhető 80H-FFH
+	2.2 SFR ennek minden 0-ra és 7-re végződő című bájtja bitcímezhető, a többi csak bájtosan 80H-FFH
+ A 2.1 és 2.2 közötti váltást a direkt/indirekt címzés adja.
 
 10. Elmélet: PSEN, RD, WR vezérlőjelek.
 M:	PSEN:	Külső programmemória olvasását engedélyező jel
@@ -133,7 +136,7 @@ M:	CLR 	C		;(CY)<=0	(megj: az utasításkészletben van az egész)
 				;BITEKNÉL XOR KAPCSOLAT NINCSEN
 
 14. Elmélet: Hol helyezkedik el, és milyen 2 fő részből áll a bit-címezhető memória. Melyik memóriaterületen vannak a bitenként címezhető regiszterek.
-M:	A belső adatmemóriában helyezkedik el , direkt és indirekt címzéssel érhető el. 20H-tól 2FH-ig (16byte) a bitcímezhető memória. 
+M:	A belső adatmemóriában helyezkedik el , direkt és indirekt címzéssel érhető el. 20H-tól 2FH-ig (16byte) a bitcímezhető terület, valamint az SFR regiszter minden 8. bájtja. 
 4 darab bitcímezhető regiszter van : BANK 0 címe: 00, BANK1 címe 01, BANK2címe 10,BANK3 címe 11     
 a bítcímezhető regiszterek 00H-tól 1FH-ig helyezkednek el.
 
@@ -147,7 +150,7 @@ M:	Akkor kell használni a # jelet , ha Immediate Constant címzést alkalmazuk 
 M:	A kettő szorzata 2BCH lesz, ez miatt B=02H és A=BCH
 
 17. Elmélet: Mit tartalmaz a .HEX file, mire kell.
-M:	A gépi kódot tartlalmazza hexadecimális formában. A ROM/EPROM ilyen formában tárolja az információt.
+M:	A gépi kódot tartlalmazza hexadecimális formában. 
 
 18. Elmélet: Mit tartalmaz és milyen formában egy program lista és egy hex formátumú fájlja?
 M:	:10246200464C5549442050524F46494C4500464C33 		;Íme egy sor példának. Minden sora a hexnek kb. ilyen hányadék.
@@ -224,7 +227,7 @@ M:	MOV 	F0, ACC.0	;Menti A-t.
 M:	RSEG: Azt jelenti, hogy előre volt definiálva egy terület, amit betöltéskor újra meg lehet találni.
 
 27. Elmélet: Bitcímeket alkalmazva, mi a 22H című regiszter 7. bitjének a bitcíme:
-M:	22H.7
+M:	22H.6
 
 28. Elmélet: Milyen ugró utasítások használhatók bit operandussal:
 M:	JB 	<bit>,<c.rel>;jump if bit , tetszőleges bitet vizsgálhatunk vele ha 1 értékű
@@ -251,7 +254,7 @@ VEG:	..........
 
 
 30. Elmélet: Counter/timer modul (TCM) felépítése és üzemmódjai:
-M:	Felépítés:
+M:	Felépítés:		;Ez amúgy a 8051 Mikrokontroller alkalmazási segédletben megtalálható.
 		Timer1	       |             Timer0		
 |  Gate  |  C/T  |  M1  |  M0  |  Gate  |  C/T  |  M1  |  M0  |
 	Üzemmódok:
@@ -259,7 +262,7 @@ M:	Felépítés:
   0    0        13 bites Timer
   0    1        16 bites Timer/Counter
   1    0        8 bites Auto-újratöltő Timer/Counter
-  1    1        Split Timer Mode. Ezt nem használjuk, mert igényel egy soros portot.
+  1    1        Split Timer Mode. Ezt nem használjuk, mert igényli a T1 regisztert, ami miatt nem lesz használható a soros port.
   
 31. Elmélet: Melyek a soros perifériákhoz kapcsolódó regiszerek és bitek:
 M:      Státusz bitek - RI,TI
@@ -284,7 +287,7 @@ M:      A mikrokontroller család megszakításai fix címűek.
 1. Alakítsa át az A regiszterben lévő bájtot bináris alakú karaktersorozattá, és tárolja el az IDATA memória 40H címétől kezdődő nyolc szomszédos helyén, és először a legmagasabb helyi érték szerepeljen! Az eredményt írja ki a soros vonalra karakteresen, és a végén küldjön egy- kocsi vissza — soremelést is! (Folyamatábra, kommentezés!) 
 
 
-2. Olvasson be a billentyűzeten megadott nyolc darab 0 és 1-1)61 álló karaktert a soros vonalon, és tárolja az IDATA memória 40H címétől kezdődően! Alakítsa át az IDATA memória 40H címétől kezdődő nyolc szomszédos helyén letárolt 0 és 1 karakterekből álló karaktersorozatot az A regiszterben lévő bináris értékké. Az eredményt írja vissza a képernyőre, decimálisan! Az első helyen a legmagasabb helyi érték szerepel. (Folyamatábra, kommentezés!) 
+2. Olvasson be a billentyűzeten megadott nyolc darab 0 és 1 álló karaktert a soros vonalon, és tárolja az IDATA memória 40H címétől kezdődően! Alakítsa át az IDATA memória 40H címétől kezdődő nyolc szomszédos helyén letárolt 0 és 1 karakterekből álló karaktersorozatot az A regiszterben lévő bináris értékké. Az eredményt írja vissza a képernyőre, decimálisan! Az első helyen a legmagasabb helyi érték szerepel. (Folyamatábra, kommentezés!) 
 
 
 3. Írjon programot, amely az A regiszterben lévő bájtot decimális karakterekké alakítva elhelyezi az IDATA memória három szomszédos helyén! Az eredményt küldje kí a soros vonalon! (bin -decimális - ASC konverzió) (Folyamatábra, kommentezés!) 
