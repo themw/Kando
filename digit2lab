@@ -171,7 +171,20 @@ LOOP4:
 	DJNZ	R6,LOOP4	;Csökkenti R6-ot és ugrik a ciklus elejére, amíg R6 nem 0.
 
 !20. Panel: Az alsó 3 nyomógombok legyenek bináris helyiértékek. Amelyik le van nyomva, annak a ledje világítson.
-
+M:	
+PROGR:	ANL 	A, #00000111B 
+	CJNE 	A, #0, FOLYTAT
+	MOV 	A, #1
+	JMP VEGE
+FOLYTAT:
+	MOV 	R0, #00000001B
+	MOV 	R6, A
+	MOV 	A, R0
+LOOP:	
+	RL 	A 
+	DJNZ 	R6, LOOP
+VEGE:	
+	NOP
 
 !21. Elmélet: A 8051-es adatmemóriájának részletes felosztását rajzold le.
 -//- 9
