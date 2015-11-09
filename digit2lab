@@ -228,7 +228,9 @@ M:	MOV 	F0, ACC.0	;Menti A-t.
 M:	RSEG: Azt jelenti, hogy előre volt definiálva egy terület, amit betöltéskor újra meg lehet találni.
 
 27. Elmélet: Bitcímeket alkalmazva, mi a 22H című regiszter 7. bitjének a bitcíme:
-M:	22H.6
+M:	17H.
+	Mert 20H-tól kezdődik a bitcímzés. Egy regiszter 8-8 bitet tartalmaz, 8+8+7=23
+	23 átváltva H-ra 17H. Illuminati confirmed?!
 
 28. Elmélet: Milyen ugró utasítások használhatók bit operandussal:
 M:	JB 	<bit>,<c.rel>;jump if bit , tetszőleges bitet vizsgálhatunk vele ha 1 értékű
