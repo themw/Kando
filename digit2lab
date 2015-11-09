@@ -173,7 +173,7 @@ LOOP4:
 
 
 !21. Elmélet: A 8051-es adatmemóriájának részletes felosztását rajzold le.
-
+-//- 9
 
 22. Program: Mi lesz A, B tartalma H alakban az alábbi program után:
 M:	MOV     A, #12H		;A-ba teszi a 12H-t: 00010010B
@@ -285,13 +285,52 @@ M:      A mikrokontroller család megszakításai fix címűek.
 =====ÖNÁLLÓ MÉRÉS=====
 
 1. Alakítsa át az A regiszterben lévő bájtot bináris alakú karaktersorozattá, és tárolja el az IDATA memória 40H címétől kezdődő nyolc szomszédos helyén, és először a legmagasabb helyi érték szerepeljen! Az eredményt írja ki a soros vonalra karakteresen, és a végén küldjön egy- kocsi vissza — soremelést is! (Folyamatábra, kommentezés!) 
-
+M:
+PROG SEGMENT CODE
+RSEG PROG
+L_UJRA:
+	MOV 	R0,#40H
+	MOV 	R7,#8		;ISMETLES 7 SZER. ASCII KÓD=SZÁM+30H
+ISM:	
+	RLC 	A
+	JNC 	UGRAS
+	MOV 	@R0,#31H
+TOV:	
+	INC 	R0
+	DJNZ 	R7,ISM
+	JMP 	L_UJRA
+UGRAS:
+	MOV	@R0,#30H	
+	JMP	TOV
+END	
 
 2. Olvasson be a billentyűzeten megadott nyolc darab 0 és 1 álló karaktert a soros vonalon, és tárolja az IDATA memória 40H címétől kezdődően! Alakítsa át az IDATA memória 40H címétől kezdődő nyolc szomszédos helyén letárolt 0 és 1 karakterekből álló karaktersorozatot az A regiszterben lévő bináris értékké. Az eredményt írja vissza a képernyőre, decimálisan! Az első helyen a legmagasabb helyi érték szerepel. (Folyamatábra, kommentezés!) 
-
+M:
 
 3. Írjon programot, amely az A regiszterben lévő bájtot decimális karakterekké alakítva elhelyezi az IDATA memória három szomszédos helyén! Az eredményt küldje kí a soros vonalon! (bin -decimális - ASC konverzió) (Folyamatábra, kommentezés!) 
-
+M:
+PROG SEGMENT CODE
+RSEG PROG
+L_UJRA:
+	MOV 	R0,#40H
+	MOV 	B,#100
+	DIV 	AB
+	ADD 	A,#30H
+	CALL 	MASOL
+	MOV 	A,B
+	MOV 	B,#10
+	DIV 	AB
+	ADD 	A,#30H
+	CALL 	MASOL
+	MOV 	A,B
+	ADD 	A,#30H
+	CALL 	MASOL
+	JMP 	L_UJRA
+MASOL:
+	MOV 	@R0,A
+	INC 	R0
+	RET 	
+END	
 
 4. Számolja meg és helyezze el az R3 regiszterbe az A regiszterben lévő 1 értékű bitek számát ASCII karakteres fog mában! Az eredményt küldje ki a soros vonalon! (Folyamatábra, kommentezés!) 
 
@@ -300,26 +339,59 @@ M:      A mikrokontroller család megszakításai fix címűek.
 
 
 6. A billentyűport (COOOH) legkisebb helyi-értékein lévő három nyomógombot A, B, C bemenetként, a LED-port (C001 H} legkisebb helyiértékű kimeneti LED -et (F) tekintve, valósítsa meg a következő logikai függvényt: F=A*B*C (A LED akkor világít, ha mindhárom gombot nyomjuk.) illetve az F=A+B+C. (A LED akkor világít, ha bármelyik gombot nyomjuk). (Folyamatábra, kommentezés!) 
-
+M:
+PROG SEGMENT CODE
+RSEG PROG
+L_UJRA:
+	CALL 	S_GOMBSOR_BE
+	ANL 	A, #0FH		;MASZKOLJA LE A-T
+	MOV 	C, ACC.0	;A
+	ANL 	C, ACC.1	;AB
+	ANL 	C, ACC.2	;ABC
+	JNC 	HAMIS
+IGAZ:	
+	MOV	A, #01H
+	CALL 	S_LED_KI
+	JMP 	L_UJRA
+HAMIS:	
+	MOV 	A, #00H
+	CALL 	S_LED_KI
+	JMP 	L_UJRA
+S_GOMBSOR_BE:
+	MOV 	DPTR, #0C000H
+	MOVX 	A, @DPTR
+	CPL 	A
+	RET
+S_LED_KI:
+	CPL 	A
+	MOV 	DPTR,#0C001H
+	MOVX 	@DPTR,A
+	RET
+END
 
 7. A billentyűport (0000H) legkisebb helyi-értékein lévő három nyomógombot A, B, C bemenetként, a LED-port (C001H) legkisebb helyi-értékű kimeneti LED -et (F) tekintve, valósítsa meg a kővetkező logikai függvényt: F=(/A*B)+B*C"/A (Folyamatábra, kommentezés!) 
-MAIN MOV C,ACC.1 B-->C
-ORL C,/ACC2   B+/C
-ANL C,ACC.0   (B+/C)*A
-MOV F0,C      (B+/C)*A --->>F0
-MOV C,ACC.0    A--->C
-ANL C,ACC.1    A*B
-ANL C,ACC.2    A*B*C
-ORL C,F0    A*B*C+A*(B+/C)
-CLR A   
-RLC A
-CALL S_LED
-JMP MAIN
+M: 	MOV 	C,ACC.1 	;B-->C
+	ORL 	C,/ACC2   	;B+/C
+	ANL 	C,ACC.0   	;(B+/C)*A
+	MOV 	F0,C      	;(B+/C)*A --->>F0
+	MOV 	C,ACC.0    	;A--->C
+	AN	C,ACC.1    	;A*B
+	ANL 	C,ACC.2    	;A*B*C
+	ORL 	C,F0    	;A*B*C+A*(B+/C)
+	CL	A   
+	RLC 	A
+	CAL	S_LED
+	JMP 	L_UJRA
 
-8. Írjon programot, amely a gyakorló alsó öt helyiértékű nvomógombját (C000h cím) bináris értékként beolvassa, és egy táblázat segítségével az érték BCD kódját jeleníti meg a LED diódasoron! (pl: gomb=10011 (13H=19D, LED sor: 0001 1001 (19) (Folyamatábra, kommentezés!) 
+8. Írjon programot, amely a gyakorló alsó öt helyiértékű nvomógombját (C000H cím) bináris értékként beolvassa, és egy táblázat segítségével az érték BCD kódját jeleníti meg a LED diódasoron! (pl: gomb=10011 (13H=19D, LED sor: 0001 1001 (19) (Folyamatábra, kommentezés!) 
+M:
+	MOV	A, #23		;Ez egy teszt. 23-vel próbáljuk meg.
+	MOV	B, #10		;Ez egy tizes osztó lesz most
+	DIV	AB		;Elosztjuk A-t 10-zel. 23 esetében A=2 B=3 
+	SWAP	A		;02 -> 20
+	ADD	A,B		;Összeadjuk. Így lesz 0010 0011B, ami 23H. Ami 23D BCD-ben, tehát jó.
 
-
-9. Írjon programot, amely egy futófényt állít elő a LED parton (0001H cím)! Késleltető hurok segítségével valósítsa meg a késleltetést. Számítsa ki a késleltetés idejét, és állítson be ne&ved másodperces ciklusidőt! (Folyamatábra, kommentezés!) 
+9. Írjon programot, amely egy futófényt állít elő a LED parton (0001H cím)! Késleltető hurok segítségével valósítsa meg a késleltetést. Számítsa ki a késleltetés idejét, és állítson be negyed másodperces ciklusidőt! (Folyamatábra, kommentezés!) 
 
 
 10. Készítsen programot, amely a billentyűport (cím: 0000H) legkisebb helyiértékén lévő nyomógomb nyomkodásával felfelé, a következő nyomógomb nyomkodásával lefelé számol! A harmadik nyomógomb megnyomása törli a számlálót! A 8 bites számláló aktuális állapotát a LED soron (C001 H) jelezze ki! (Folyamatábra, kommentezés!) 
