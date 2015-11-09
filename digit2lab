@@ -680,8 +680,8 @@ NEV:		DB	'Mw',0,'Space, Milky Way, Mars',0,'Space kitten',0 ;DPTR erre van áll�
 
 ;egy példa a delayre. Ez 1 mp.
 S_DELAY:
-	MOV	R2,#244		;
-	MOV	R3,#1		;
+	MOV	R2,#244		;Ezt azért nem dokumentálom, mert generáljató a programon belül.
+	MOV	R3,#1		;Ja, és figyelj arra, hogy ne használj R2-3-4,et, mert az át fog állítódni.
 	MOV	R4,#8		;
 	DJNZ	R2,$		;
 	DJNZ	R3,$-2		;
@@ -690,104 +690,104 @@ S_DELAY:
 
 ;akármilyen gombnyomásra vár, A-ba ír.
 S_BIL_VAR:
-        CALL	 S_SOROS_BE	;
-        JZ  	 S_BIL_VAR	;
+        CALL	 S_SOROS_BE	;Ugrik erre a szubrutinra.
+        JZ  	 S_BIL_VAR	;Ha A=0, akkor ugrik erre a szubrutinra.
         RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;enterre vár, A-ba ír.
 S_BIL_VAR_ENTER:
-        CALL	S_BIL_VAR	;
-        XRL	A,#0DH		;
-        JNZ	S_BIL_VAR_ENTER	;
-        CALL	S_CRLF_KI	;
+        CALL	S_BIL_VAR	;Ugrik erre a szubrutinra.
+        XRL	A,#0DH		;A XOR 1101B
+        JNZ	S_BIL_VAR_ENTER	;Ha A <> 0 akkor ugrik erre a szubrutinra.
+        CALL	S_CRLF_KI	;Ugrik erre a szubrutinra.
         RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;új sor és soreleje. A megmarad
 S_CRLF_KI:
-	;PUSH	ACC		;
-	MOV	A,#0DH		;
-	CALL	S_SOROS_KI	;
-	MOV	A,#0AH		;
-	CALL	S_SOROS_KI	;
-	;POP	ACC		;
+	;PUSH	ACC		;Lementi A értékét a verembe
+	MOV	A,#0DH		;A=0DH
+	CALL	S_SOROS_KI	;Ugrik erre a szubrutinra. Viszi magával A-t
+	MOV	A,#0AH		;A=0AH
+	CALL	S_SOROS_KI	;Ugrik erre a szubrutinra. Viszi magával A-t
+	;POP	ACC		;Visszaveszi A eredeti értékét
 	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;erteket olvas soros vonalrol decimalisan 0-255. A-ba olvas, B R2 megmarad, C torlodik
 S_DEC_BE:
-	;PUSH	B		;
-	;MOV	B,R2		;
-	;PUSH	B		;
-	CALL	S_SOROS_BE	;
-	CLR	C		;
-	SUBB	A,#30H		;
-	MOV	B,#100		;
-	MUL	AB		;
-	MOV	R2,A		;
-	CALL	S_SOROS_BE	;
-	CLR	C		;
-	SUBB	A,#30H		;
-	MOV	B,#10		;
-	MUL	AB		;
-	ADD	A,R2		;
-	MOV	R2,A		;
-	CALL	S_SOROS_BE	;
-	CLR	C		;
-	SUBB	A,#30H		;
-	ADD	A,R2		;
-	;POP	B		;
-	;MOV	R2,B		;
-	;POP	B		;
+	;PUSH	B		;B első értékét verembe helyezi.
+	;MOV	B,R2		;R2 -> B
+	;PUSH	B		;B második értékét a verembe helyezi.
+	CALL	S_SOROS_BE	;Ugrik erre a szubrutinra.
+	CLR	C		;Törli a Carryt
+	SUBB	A,#30H		;A=A-30H-C ahol most C=0
+	MOV	B,#100		;B=100
+	MUL	AB		;A*B, eleje B-ben, vége A-ban
+	MOV	R2,A		;A= (R2)
+	CALL	S_SOROS_BE	;Ugrik erre a szubrutinra.
+	CLR	C		;Törli a Carryt
+	SUBB	A,#30H		;A=A-30H-C ahol most C=0
+	MOV	B,#10		;B=10H
+	MUL	AB		;A*B, eleje B-ben, vége A-ban
+	ADD	A,R2		;A=A+R2
+	MOV	R2,A		;A -> R2
+	CALL	S_SOROS_BE	;Ugrik erre a szubrutinra.
+	CLR	C		;Törli a Carryt
+	SUBB	A,#30H		;A=A-30H-C ahol most C=0
+	ADD	A,R2		;R2 -> A
+	;POP	B		;Felszabadítja B második értékét
+	;MOV	R2,B		;Elmenti B-t R2-be
+	;POP	B		;Visszaveszi B eredeti értékét
 	RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;erteket kuld soros vonalra decimalisan 0-255. A-bol ir, A B megmarad
 S_DEC_KI:	
-	PUSH	ACC		;
-	;PUSH	B		;
-	MOV	B,#100		;
-	DIV	AB		;
-	ADD	A,#30H		;
-	CALL	S_SOROS_KI	;
-	MOV	A,B		;
-	MOV	B,#10		;
-	DIV	AB		;
-	ADD	A,#30H		;
-	CALL	S_SOROS_KI	;
-	MOV	A,B		;
-	ADD	A,#30H		;
-	CALL	S_SOROS_KI	;
-	;POP	B		;
-	POP	ACC		;
+	PUSH	ACC		;A értékét betolja a verembe
+	;PUSH	B		;B értékét betolja a verembe
+	MOV	B,#100		;B=100
+	DIV	AB		;A/B, eredmény A-ban, maradék B-ben lesz.
+	ADD	A,#30H		;A=A+30H
+	CALL	S_SOROS_KI	;Ugrik erre a szubrutinra.
+	MOV	A,B		;B -> A; B=A
+	MOV	B,#10		;B=B+10
+	DIV	AB		;A/B, eredmény A-ban, maradék B-ben lesz.
+	ADD	A,#30H		;A=A+30H
+	CALL	S_SOROS_KI	;Ugrik erre a szubrutinra.
+	MOV	A,B		;B -> A; B=A
+	ADD	A,#30H		;A=A+30H
+	CALL	S_SOROS_KI	;Ugrik erre a szubrutinra.
+	;POP	B		;Visszaveszi a veremből B értékét
+	POP	ACC		;Visszaveszi a veremből A értékét
 	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;erteket olvas soros vonalrol, majd vissza is kuldi. A-ba olvas
 S_ECHO:		
-	CALL	S_DEC_BE	;
-	CALL	S_DEC_KI	;
+	CALL	S_DEC_BE	;Ugrik erre a szubrutinra.
+	CALL	S_DEC_KI	;Ugrik erre a szubrutinra.
 	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;gombokat olvas. A-ba ir, DPTR valtozik
 S_KLAV:
-	MOV	DPTR,#0C000H	;
-	MOVX	A,@DPTR		;
-	CPL	A		;
+	MOV	DPTR,#0C000H	;Beleteszi az értéket a datapointer regiszterbe.
+	MOVX	A,@DPTR		;Külső RAMBÓL helyez indirekten adatot A-ba. A <-(0C000H)
+	CPL	A		;Komplementálja A bitjeit.
 	RET			;Visszaugrik oda, ahonnét meghívták.
 
 ;gombokat olvas, és vár ha nem nyomtam semmit. A-ba ir, DPTR valtozik
 S_KLAW:
-	CALL	S_KLAV		;
-	CJNE	A,#00H,L_AT1	;
-	JMP	S_KLAW		;
+	CALL	S_KLAV		;Ugrik erre a szubrutinra.
+	CJNE	A,#00H,L_AT1	;Összehasonlítja A-t és a regisztert. Ugrik erre a szubrutinra ha a kettő nem egyenlő
+	JMP	S_KLAW		;Visszaugrik önmagára.
 L_AT1:	
 	RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;gombot olvas, vár amíg nem nyomok semmit, és akkor megy tovább ha elengedem. A-ba ir, DPTR valtozik
 S_KLAWE:
-	CALL	S_KLAW		;
-	PUSH	ACC		;
+	CALL	S_KLAW		;Ugrik erre a szubrutinra.
+	PUSH	ACC		;Verembe tolja ACC-t
 L_UJ1:
-	MOVX	A,@DPTR		;
-	CJNE	A,0FFH,L_UJ1	;
-	POP	ACC		;
+	MOVX	A,@DPTR		;A ba rakja DPTR indirekt értékét külső RAM-ból
+	CJNE	A,0FFH,L_UJ1	;Összehasonlítja A-t és a a regisztert. Ugrik erre a szubrutinra, ha a kettő nem egyenlő
+	POP	ACC		;Felszabadítja A-t
 	RET			;Visszaugrik oda, ahonnét meghívták.
 	
 ;ledeket felvillant. A-ból ír, DPTR változik.
@@ -840,7 +840,5 @@ L_FULL:
 L_KIJEL:
 	CALL 	S_LED		;Ugrik erre a szubrutinra.
 	JMP 	L_UJRA		;Visszaugrik a főprogramra.
-
-
 
 END
