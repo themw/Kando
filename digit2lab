@@ -81,7 +81,7 @@ LOOP1:
 7. Program: Másoljuk át 4000H-tól 5 bájtot a 60H-tól kezdődő belső adatmemória címekre.
 M:	MOV	R6, #5		;R6-ba az ötös értéket.
 	MOV	R1, #60H	;R1-be 60H értéket.
-	MOV	DPTR, #400H	;Datapointerbe 400H érték.
+	MOV	DPTR, #4000H	;Datapointerbe 400H érték.
 LOOP2:
 	MOVX	A,@DPTR		;DPTR-ben levő cím tartalmát az aksiba pakoljuk	külső RAM-ra mutató címből.	
 	INC	DPTR		;a datapointer értékének növelése.
