@@ -76,7 +76,7 @@ M:	MOV	R6, #60		;60-as számot R6-ba másoljuk.
 LOOP1:
 	MOV	@R0, #0FFH	;Indirekt címzéssel eljuttatjuk a H számot az R0-ban levő hely értékére.
 	INC	R0		;Növeljök R0-t, ezáltal mindig a következő címet kapjuk minden új ciklusban.
-	DJNZ	R1, LOOP1	;Csökkenti R1 tartalmát, és visszaugrik a LOOP1 sorba. Amíg R1 nem 0.
+	DJNZ	R6, LOOP1	;Csökkenti R1 tartalmát, és visszaugrik a LOOP1 sorba. Amíg R1 nem 0.
 
 7. Program: Másoljuk át 4000H-tól 5 bájtot a 60H-tól kezdődő belső adatmemória címekre.
 M:	MOV	R6, #5		;R6-ba az ötös értéket.
