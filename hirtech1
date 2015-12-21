@@ -1,0 +1,57 @@
+H0i!
+Figyelem, fontos!
+-Az alábbi zh kidolgozásom több sebből vérezhet. Kérlek, ha tudod hogy valamelyikre nyílvánvaló baromságot írtam volna, jelezd felém valamilyen módon, ki fogom javítani. Köszönöm =3
+-A zh az Óbudai telephelyen hallgatókra vonatkozik, különösen ha Vámos Péter tanár úrral vagytok.
+-Nyílván nem hírtechre megyek tovább.
+.űrcica
+Nesze, egy kis zene: https://youtu.be/QGKYmjsS0hg
+
+1. Lineáris kvantálás esetén a kvantálási zaj átlagos teljesítménye a kvantálási lépcső méretével ... arányos.
+egyenesen
+
+2. A pillanatnyi frekvencia ... .
+A fázis idő szerinti deriváltja
+
+3. 100 dB hangnyomásszint ... hangnyomásnak felel meg.
+
+
+4. A bemenő szűrő elsődleges feladata a
+
+
+5. Nagyobb mintavételi frekvenciát alkalmazva a kvantálási zaj ... .
+
+
+6. Az int(x(t)e^(-j2pi*ft))dt from -inf to inf integrál az x(t) függvény 
+Fourier transzformáltja, mivel dt szerint integrál.
+
+7. Az emberi hallás ... frekvencián a legérzékenyebb
+1kHz
+
+8. Egy B sávszélességű alapsávi jelből legalább ... frekvenciával kell mintát venni, hogy a jel visszaállítható legyen.
+2B
+
+9. Az AM-DSB jel sávszélessége ...
+A moduláló jel sávszélességének a kétszerese
+
+10. A szivárgó komponensek megjelenésének az oka ...
+
+
+11. Logaritmikus kvantálás esetén a kvantálási lépcső nagysága ... .
+a minta abszolút értékével egyenesen arányos
+
+12. Páratlan periodikus függvények Fourier sora csak ... tartalmaz.
+szinuszos tagokat
+
+NAGY FELADATOK
+I) Egy rádió adó az m(t)=3cos(6000pi*t +2) moduláló jel hatására az s(f)=150cos[210*10^6 *pi*t +5+9cos(6000pi*t+2)] ([t]=sec) jelet sugároz ki.
+a) Milyen modulációs eljárást alkalmaz az adó?
+
+b) Milyen frekvencián sugároz az adó?
+
+c) Mekkora a modulált jel fázislökete?
+
+d) Mekkora a frekvencialöket?
+
+II) Egy 9kHz mintavételi frekvenciával működő digitális átviteli rendszer bemenő és visszaállító szűrője azonos karakterisztikájú, 0 és 10kHz között enged át spektrális komponenseket. A rendszer bemenetére egy 2.5kHz-es négyszögjelet kapcsolunk. Milyen spektrális komponensek jelennek meg a kimeneten? (Segítség: Tanultuk, hogy egy 4szögjel Fourier sorában csak páratlan felharmonikusok vannak.)
+
+
