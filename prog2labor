@@ -1,0 +1,49 @@
+/*
+    Space Kitten
+    200-100-ig magas szinten adat2.bin-be kiírni 3-mal oszható számokat.
+    Méretet a terminálba megjeleníteni.
+    Alacsony szinten kiolvasni, majd összegüket megjeleníteni.
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <io.h>
+
+int main()
+{
+//-------------------------magas
+    FILE *fp;
+    int i, db=0;
+
+    fp = fopen("adat2.bin", "r+");
+    if (!fp)
+        printf("NIncs ilyen file... Letrehoz");
+    fp = fopen("adat2.bin","w+");
+    for(i=200; i>=100; i--){
+        if(i%3 == 0){
+            fwrite(&i, sizeof(int), 1, fp);
+            db++;
+        }
+    }
+    printf("File meret: %d\n", db * sizeof(int));
+    fclose(fp);
+//-------------------------alacsony
+    int f, x, ossz=0;
+
+    f = open("adat2.bin", O_RDONLY);
+    if (f == -1)    //Ennek egyébként totál nincs értelme, mert mindenképpen létezni fog,
+                    //De a feladat megköveteli...
+        f = open("adat2.bin", O_CREAT | O_RDWR, S_IRWXU);
+    while( read(f,&x,sizeof(int)) ){
+        //printf("%d\n", x);
+        ossz += x;
+    }
+    printf("Osszeg: %d\n", ossz);
+    close(f);
+//-------------------------megoldás
+    printf("Ezt kell beirni: %d\n", db*sizeof(int)*1000000+ossz);
+
+    return 0;
+}
